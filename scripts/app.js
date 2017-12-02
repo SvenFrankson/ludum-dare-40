@@ -41,6 +41,49 @@ window.addEventListener("DOMContentLoaded", () => {
     game.groundZero.position.z += seaSize / 2;
     game.groundZero.isVisible = false;
 });
+class LDMath {
+    static IsNanOrZero(n) {
+        return isNaN(n) || n === 0;
+    }
+    static ProjectPerpendicularAtToRef(v, at, ref) {
+        if (v && at) {
+            let k = BABYLON.Vector3.Dot(v, at);
+            k = k / at.lengthSquared();
+            if (isFinite(k)) {
+                ref.copyFrom(v);
+                ref.subtractInPlace(at.scale(k));
+            }
+        }
+    }
+    static ProjectPerpendicularAt(v, at) {
+        let out = BABYLON.Vector3.Zero();
+        LDMath.ProjectPerpendicularAtToRef(v, at, out);
+        return out;
+    }
+    static Angle(from, to) {
+        return Math.acos(BABYLON.Vector3.Dot(from, to) / from.length() / to.length());
+    }
+    static AngleFromToAround(from, to, around, onlyPositive = false) {
+        let pFrom = LDMath.ProjectPerpendicularAt(from, around).normalize();
+        if (LDMath.IsNanOrZero(pFrom.lengthSquared())) {
+            return NaN;
+        }
+        let pTo = LDMath.ProjectPerpendicularAt(to, around).normalize();
+        if (LDMath.IsNanOrZero(pTo.lengthSquared())) {
+            return NaN;
+        }
+        let angle = Math.acos(BABYLON.Vector3.Dot(pFrom, pTo));
+        if (BABYLON.Vector3.Dot(BABYLON.Vector3.Cross(pFrom, pTo), around) < 0) {
+            if (onlyPositive) {
+                angle = 2 * Math.PI - angle;
+            }
+            else {
+                angle = -angle;
+            }
+        }
+        return angle;
+    }
+}
 class Sea {
     constructor(size) {
         this.size = 0;
@@ -130,7 +173,6 @@ class Ship {
         this._update = () => {
             if (this.instance) {
                 let deltaTime = this.instance.getScene().getEngine().getDeltaTime();
-                console.log(deltaTime);
                 let dir = this.target.subtract(this.instance.position);
                 if (dir.lengthSquared() > 1) {
                     dir.normalize();
@@ -138,7 +180,18 @@ class Ship {
                     this.instance.position.z += dir.z * deltaTime / 1000 * this.speed;
                 }
                 this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
-                this.instance.lookAt(this.target);
+                let alpha = LDMath.AngleFromToAround(this.instance.getDirection(BABYLON.Axis.Z), dir, BABYLON.Axis.Y);
+                if (this.debugDir) {
+                    this.debugDir.dispose();
+                }
+                this.debugDir = BABYLON.RayHelper.CreateAndShow(new BABYLON.Ray(this.instance.position, dir), this.instance.getScene(), BABYLON.Color3.Blue());
+                if (this.debugZ) {
+                    this.debugZ.dispose();
+                }
+                this.debugZ = BABYLON.RayHelper.CreateAndShow(new BABYLON.Ray(this.instance.position, this.instance.getDirection(BABYLON.Axis.Z)), this.instance.getScene(), BABYLON.Color3.Red());
+                if (isFinite(alpha)) {
+                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 4 * deltaTime / 1000));
+                }
             }
         };
         this.sea = sea;

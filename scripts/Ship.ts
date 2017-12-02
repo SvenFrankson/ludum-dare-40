@@ -9,10 +9,11 @@ class Ship {
         this.sea = sea;
     }
 
+    public debugDir: BABYLON.RayHelper;
+    public debugZ: BABYLON.RayHelper;
     private _update = () => {
         if (this.instance) {
             let deltaTime: number = this.instance.getScene().getEngine().getDeltaTime();
-            console.log(deltaTime);
             let dir: BABYLON.Vector3 = this.target.subtract(this.instance.position);
             if (dir.lengthSquared() > 1) {
                 dir.normalize();
@@ -20,7 +21,23 @@ class Ship {
                 this.instance.position.z += dir.z * deltaTime / 1000 * this.speed;
             }
             this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
-            this.instance.lookAt(this.target);
+            let alpha = LDMath.AngleFromToAround(this.instance.getDirection(BABYLON.Axis.Z), dir, BABYLON.Axis.Y);
+            if (this.debugDir) {
+                this.debugDir.dispose();
+               
+            }
+            this.debugDir = BABYLON.RayHelper.CreateAndShow(
+                new BABYLON.Ray(this.instance.position, dir), this.instance.getScene(), BABYLON.Color3.Blue()
+            );
+            if (this.debugZ) {
+                this.debugZ.dispose();
+            }
+            this.debugZ = BABYLON.RayHelper.CreateAndShow(
+                new BABYLON.Ray(this.instance.position, this.instance.getDirection(BABYLON.Axis.Z)), this.instance.getScene(), BABYLON.Color3.Red()
+            );
+            if (isFinite(alpha)) {
+                this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 4 * deltaTime / 1000));
+            }
         }
     }
 
