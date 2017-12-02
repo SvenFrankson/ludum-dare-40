@@ -12,8 +12,6 @@ class Main {
         this.light = new BABYLON.HemisphericLight("Light", (new BABYLON.Vector3(0.5, 0.65, 0.8)).normalize(), this.scene);
         this.light.groundColor.copyFromFloats(0.5, 0.5, 0.5);
         this.light.intensity = 0.7;
-        this.camera = new BABYLON.ArcRotateCamera("MenuCamera", Math.PI / 3, Math.PI / 3, 10, BABYLON.Vector3.Zero(), this.scene);
-        this.camera.attachControl(this.canvas);
     }
     animate() {
         this.engine.runRenderLoop(() => {
@@ -32,9 +30,8 @@ window.addEventListener("DOMContentLoaded", () => {
     let sea = new Sea(seaSize);
     sea.instantiate(game.scene);
     let ship = new Ship(sea);
-    ship.instantiate(game.scene, () => {
-        game.camera.setTarget(ship.instance);
-    });
+    game.camera = new ShipCamera("ShipCamera", ship, game.scene);
+    ship.instantiate(game.scene);
     let shipControler = new ShipControler(ship, game.scene);
     game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", { width: seaSize * 10, height: seaSize * 10 }, game.scene);
     game.groundZero.isVisible = false;
@@ -175,7 +172,7 @@ class Ship {
                 let forward = this.instance.getDirection(BABYLON.Axis.Z);
                 let targetSpeed = BABYLON.Vector3.Distance(this.target, this.instance.position) / 10 * 5;
                 targetSpeed = Math.min(Math.max(targetSpeed, 0), 5);
-                this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.1);
+                this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.01);
                 this.instance.position.x += forward.x * deltaTime / 1000 * this.speed;
                 this.instance.position.z += forward.z * deltaTime / 1000 * this.speed;
                 this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
@@ -210,6 +207,29 @@ class Ship {
                 callback();
             }
         });
+    }
+}
+class ShipCamera extends BABYLON.FreeCamera {
+    constructor(name, ship, scene) {
+        super(name, BABYLON.Vector3.Zero(), scene);
+        this.smoothness = 60;
+        this._update = () => {
+            if (this.ship && this.ship.instance) {
+                let targetPos = this.ship.instance.position.clone();
+                targetPos.y = 7;
+                let cameraPos = this.ship.instance.getDirection(BABYLON.Axis.Z);
+                cameraPos.y = 0;
+                cameraPos.scaleInPlace(-20);
+                cameraPos.addInPlace(new BABYLON.Vector3(0, 20, 0));
+                cameraPos.x += this.ship.instance.position.x;
+                cameraPos.z += this.ship.instance.position.z;
+                this.position = BABYLON.Vector3.Lerp(this.position, cameraPos, 1 / this.smoothness);
+                this.update();
+                this.setTarget(targetPos);
+            }
+        };
+        this.ship = ship;
+        scene.registerBeforeRender(this._update);
     }
 }
 class ShipControler {

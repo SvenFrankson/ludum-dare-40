@@ -5,7 +5,7 @@ class Main {
 	public engine: BABYLON.Engine;
 	public scene: BABYLON.Scene;
 	public light: BABYLON.HemisphericLight;
-	public camera: BABYLON.ArcRotateCamera;
+	public camera: ShipCamera;
 	public groundZero: BABYLON.Mesh;
 
 	constructor(canvasElement: string) {
@@ -23,9 +23,6 @@ class Main {
 		this.light = new BABYLON.HemisphericLight("Light", (new BABYLON.Vector3(0.5, 0.65, 0.8)).normalize(), this.scene);
 		this.light.groundColor.copyFromFloats(0.5, 0.5, 0.5);
 		this.light.intensity = 0.7;
-
-		this.camera = new BABYLON.ArcRotateCamera("MenuCamera", Math.PI/3, Math.PI / 3, 10, BABYLON.Vector3.Zero(), this.scene);
-		this.camera.attachControl(this.canvas);
 	}
 
 	public animate(): void {
@@ -50,11 +47,10 @@ window.addEventListener("DOMContentLoaded", () => {
 	sea.instantiate(game.scene);
 
 	let ship = new Ship(sea);
+	game.camera = new ShipCamera("ShipCamera", ship, game.scene);
+
 	ship.instantiate(
-		game.scene,
-		() => {
-			game.camera.setTarget(ship.instance);
-		}
+		game.scene
 	);
 
 	let shipControler = new ShipControler(ship, game.scene);

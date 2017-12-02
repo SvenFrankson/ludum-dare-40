@@ -19,7 +19,7 @@ class Ship {
 
             let targetSpeed = BABYLON.Vector3.Distance(this.target, this.instance.position) / 10 * 5;
             targetSpeed = Math.min(Math.max(targetSpeed, 0), 5);
-            this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.1);
+            this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.01);
 
             this.instance.position.x += forward.x * deltaTime / 1000 * this.speed;
             this.instance.position.z += forward.z * deltaTime / 1000 * this.speed;
