@@ -32,7 +32,9 @@ window.addEventListener("DOMContentLoaded", () => {
     let sea = new Sea(seaSize);
     sea.instantiate(game.scene);
     let ship = new Ship(sea);
-    ship.instantiate(game.scene);
+    ship.instantiate(game.scene, () => {
+        game.camera.setTarget(ship.instance);
+    });
     let shipControler = new ShipControler(ship, game.scene);
     game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", { width: seaSize, height: seaSize }, game.scene);
     game.groundZero.position.x += seaSize / 2;
@@ -116,7 +118,6 @@ class Sea {
         let j = Math.floor(y);
         let j1 = j + 1;
         let dy = y - j;
-        console.log(i + " " + j);
         let hX0 = BABYLON.Scalar.Lerp(this.heightMap[i][j], this.heightMap[i1][j], dx);
         let hX1 = BABYLON.Scalar.Lerp(this.heightMap[i][j1], this.heightMap[i1][j1], dx);
         return BABYLON.Scalar.Lerp(hX0, hX1, dy);
@@ -137,6 +138,7 @@ class Ship {
                     this.instance.position.z += dir.z * deltaTime / 1000 * this.speed;
                 }
                 this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
+                this.instance.lookAt(this.target);
             }
         };
         this.sea = sea;
@@ -152,6 +154,9 @@ class Ship {
                 m.parent = this.instance;
             });
             scene.registerBeforeRender(this._update);
+            if (callback) {
+                callback();
+            }
         });
     }
 }

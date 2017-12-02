@@ -84,7 +84,6 @@ class Sea {
         let j = Math.floor(y);
         let j1 = j + 1;
         let dy = y - j;
-        console.log(i + " " + j);
 
         let hX0 = BABYLON.Scalar.Lerp(this.heightMap[i][j], this.heightMap[i1][j], dx);
         let hX1 = BABYLON.Scalar.Lerp(this.heightMap[i][j1], this.heightMap[i1][j1], dx);

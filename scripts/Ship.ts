@@ -20,6 +20,7 @@ class Ship {
                 this.instance.position.z += dir.z * deltaTime / 1000 * this.speed;
             }
             this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
+            this.instance.lookAt(this.target);
         }
     }
 
@@ -41,6 +42,9 @@ class Ship {
                     }
                 );
                 scene.registerBeforeRender(this._update);
+                if (callback) {
+                    callback();
+                }
             }
         )
     }

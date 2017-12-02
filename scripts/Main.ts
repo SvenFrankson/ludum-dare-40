@@ -50,7 +50,12 @@ window.addEventListener("DOMContentLoaded", () => {
 	sea.instantiate(game.scene);
 
 	let ship = new Ship(sea);
-	ship.instantiate(game.scene);
+	ship.instantiate(
+		game.scene,
+		() => {
+			game.camera.setTarget(ship.instance);
+		}
+	);
 
 	let shipControler = new ShipControler(ship, game.scene);
 
