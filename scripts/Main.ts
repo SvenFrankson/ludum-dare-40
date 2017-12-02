@@ -39,4 +39,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	let game: Main = new Main("render-canvas");
 	game.createScene();
 	game.animate();
+
+	let ship = new Ship();
+	ship.instantiate(game.scene);
 });

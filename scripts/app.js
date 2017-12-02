@@ -25,4 +25,14 @@ window.addEventListener("DOMContentLoaded", () => {
     let game = new Main("render-canvas");
     game.createScene();
     game.animate();
+    let ship = new Ship();
+    ship.instantiate(game.scene);
 });
+class Ship {
+    constructor() {
+    }
+    instantiate(scene, callback) {
+        BABYLON.SceneLoader.ImportMesh("", "./data/ship.babylon", "", scene, (meshes) => {
+        });
+    }
+}
