@@ -94,8 +94,9 @@ class Sea {
         }
     }
     instantiate(scene) {
-        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", { width: 256, height: 256, subdivisions: 256 }, scene);
+        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", { width: 512, height: 512, subdivisions: 512 }, scene);
         this.mesh.material = new SeaMaterial("SeaMaterial", scene);
+        this.mesh.material.wireframe = false;
     }
     wavesSum(x, y, t) {
         let s = 0;
@@ -127,9 +128,37 @@ class SeaMaterial extends BABYLON.ShaderMaterial {
             uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
         });
         this.t = 0;
+        this.dir0 = BABYLON.Vector2.Zero();
+        this.dir1 = BABYLON.Vector2.Zero();
+        this.dir2 = BABYLON.Vector2.Zero();
+        this.dir3 = BABYLON.Vector2.Zero();
+        this.dir4 = BABYLON.Vector2.Zero();
+        this.dir5 = BABYLON.Vector2.Zero();
+        this.dir6 = BABYLON.Vector2.Zero();
         this._updateTime = () => {
             this.setFloat("time", this.t++ / 60);
         };
+        this.dir0 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
+        this.dir1 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
+        this.dir2 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
+        this.dir3 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
+        this.dir4 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
+        this.dir5 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
+        this.dir6 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
+        this.setVector2("dir0", this.dir0);
+        this.setVector2("dir1", this.dir1);
+        this.setVector2("dir2", this.dir2);
+        this.setVector2("dir3", this.dir3);
+        this.setVector2("dir4", this.dir4);
+        this.setVector2("dir5", this.dir5);
+        this.setVector2("dir6", this.dir6);
+        this.setFloat("a0", 1 / 7);
+        this.setFloat("a1", 1 / 7);
+        this.setFloat("a2", 1 / 7);
+        this.setFloat("a3", 1 / 7);
+        this.setFloat("a4", 1 / 7);
+        this.setFloat("a5", 1 / 7);
+        this.setFloat("a6", 1 / 7);
         scene.registerBeforeRender(this._updateTime);
     }
 }

@@ -26,8 +26,9 @@ class Sea {
     }
 
     public instantiate(scene: BABYLON.Scene): void {
-        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", {width: 256, height: 256, subdivisions: 256}, scene);
+        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", {width: 512, height: 512, subdivisions: 512}, scene);
         this.mesh.material = new SeaMaterial("SeaMaterial", scene);
+        this.mesh.material.wireframe = false;
     }
 
     private wavesSum(x: number, y: number, t: number): number {
