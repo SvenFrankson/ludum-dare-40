@@ -44,4 +44,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	let ship = new Ship();
 	ship.instantiate(game.scene);
+
+	let seaSize = 64;
+	let sea = new Sea(seaSize);
+	sea.instantiate(game.scene);
 });

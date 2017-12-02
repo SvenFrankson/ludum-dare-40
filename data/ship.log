@@ -57,12 +57,12 @@ Exporter version: 5.4.2, Blender version: 2.78 (sub 0)
 		num indices        :  960
 	processing begun of mesh:  Cabin
 		WARNING: No materials have been assigned: 
-		num positions      :  136
-		num normals        :  136
+		num positions      :  137
+		num normals        :  137
 		num uvs            :  0
 		num uvs2           :  0
 		num colors         :  0
-		num indices        :  774
+		num indices        :  792
 	processing begun of mesh:  Shell
 		WARNING: No materials have been assigned: 
 		num positions      :  66
@@ -74,4 +74,4 @@ Exporter version: 5.4.2, Blender version: 2.78 (sub 0)
 ========= Writing of scene file started =========
 ========= Writing of scene file completed =========
 ========= end of processing =========
-elapsed time:  0 min, 0.2903 secs
+elapsed time:  0 min, 0.3087 secs
