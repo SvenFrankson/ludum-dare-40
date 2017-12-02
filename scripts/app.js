@@ -1,5 +1,6 @@
 class Main {
     constructor(canvasElement) {
+        Main.instance = this;
         this.canvas = document.getElementById(canvasElement);
         this.engine = new BABYLON.Engine(this.canvas, true);
         BABYLON.Engine.ShadersRepository = "./shaders/";
@@ -32,6 +33,11 @@ window.addEventListener("DOMContentLoaded", () => {
     sea.instantiate(game.scene);
     let ship = new Ship(sea);
     ship.instantiate(game.scene);
+    let shipControler = new ShipControler(ship, game.scene);
+    game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", { width: seaSize, height: seaSize }, game.scene);
+    game.groundZero.position.x += seaSize / 2;
+    game.groundZero.position.z += seaSize / 2;
+    game.groundZero.isVisible = false;
 });
 class Sea {
     constructor(size) {
@@ -73,8 +79,6 @@ class Sea {
         seaMaterial.specularColor.copyFromFloats(0, 0, 0);
         seaMaterial.wireframe = true;
         this.mesh = new BABYLON.Mesh("Sea", scene);
-        this.mesh.position.x = -this.size / 2;
-        this.mesh.position.z = -this.size / 2;
         this.mesh.material = seaMaterial;
         let positions = [];
         let indices = [];
@@ -112,6 +116,7 @@ class Sea {
         let j = Math.floor(y);
         let j1 = j + 1;
         let dy = y - j;
+        console.log(i + " " + j);
         let hX0 = BABYLON.Scalar.Lerp(this.heightMap[i][j], this.heightMap[i1][j], dx);
         let hX1 = BABYLON.Scalar.Lerp(this.heightMap[i][j1], this.heightMap[i1][j1], dx);
         return BABYLON.Scalar.Lerp(hX0, hX1, dy);
@@ -119,6 +124,21 @@ class Sea {
 }
 class Ship {
     constructor(sea) {
+        this.target = BABYLON.Vector3.Zero();
+        this.speed = 5;
+        this._update = () => {
+            if (this.instance) {
+                let deltaTime = this.instance.getScene().getEngine().getDeltaTime();
+                console.log(deltaTime);
+                let dir = this.target.subtract(this.instance.position);
+                if (dir.lengthSquared() > 1) {
+                    dir.normalize();
+                    this.instance.position.x += dir.x * deltaTime / 1000 * this.speed;
+                    this.instance.position.z += dir.z * deltaTime / 1000 * this.speed;
+                }
+                this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
+            }
+        };
         this.sea = sea;
     }
     instantiate(scene, callback) {
@@ -131,10 +151,23 @@ class Ship {
                 m.outlineWidth = 0.01;
                 m.parent = this.instance;
             });
-            scene.registerBeforeRender(() => {
-                this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
-            });
+            scene.registerBeforeRender(this._update);
         });
+    }
+}
+class ShipControler {
+    constructor(ship, scene) {
+        this._checkInputs = () => {
+            let pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh) => {
+                return mesh === Main.instance.groundZero;
+            });
+            if (pickInfo.hit) {
+                this.ship.target.copyFrom(pickInfo.pickedPoint);
+            }
+        };
+        this.ship = ship;
+        this.scene = scene;
+        this.scene.registerBeforeRender(this._checkInputs);
     }
 }
 class ToonMaterial extends BABYLON.ShaderMaterial {

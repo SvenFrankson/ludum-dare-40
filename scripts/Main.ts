@@ -1,12 +1,15 @@
 class Main {
 
+	public static instance: Main;
 	public canvas: HTMLCanvasElement;
 	public engine: BABYLON.Engine;
 	public scene: BABYLON.Scene;
 	public light: BABYLON.HemisphericLight;
 	public camera: BABYLON.ArcRotateCamera;
+	public groundZero: BABYLON.Mesh;
 
 	constructor(canvasElement: string) {
+		Main.instance = this;
 		this.canvas = document.getElementById(canvasElement) as HTMLCanvasElement;
 		this.engine = new BABYLON.Engine(this.canvas, true);
 		BABYLON.Engine.ShadersRepository = "./shaders/";
@@ -48,4 +51,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	let ship = new Ship(sea);
 	ship.instantiate(game.scene);
+
+	let shipControler = new ShipControler(ship, game.scene);
+
+	game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", {width: seaSize, height: seaSize}, game.scene);
+	game.groundZero.position.x += seaSize / 2;
+	game.groundZero.position.z += seaSize / 2;
+	game.groundZero.isVisible = false;
 });
