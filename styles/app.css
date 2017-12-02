@@ -1,0 +1,52 @@
+html, body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.title {
+    font-family: 'Raleway', Arial, Helvetica, sans-serif;
+    font-weight: Lighter;
+    font-size: 80px;
+    color: white;
+    border-bottom: 1px solid;
+    border-color: white;
+}
+
+.subtitle {
+    font-family: 'Raleway', Arial, Helvetica, sans-serif;
+    font-weight: Lighter;
+    font-size: 26px;
+    color: rgb(240, 240, 240);
+    text-align: right;
+    margin-bottom: 5%;
+}
+
+.mediumtitle {
+    font-family: 'Raleway', Arial, Helvetica, sans-serif;
+    font-weight: Lighter;
+    font-size: 40px;
+    color: white;
+    margin-bottom: 5%;
+}
+
+#render-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    touch-action: none;
+    z-index: 1;
+}
+
+#main-page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+}
