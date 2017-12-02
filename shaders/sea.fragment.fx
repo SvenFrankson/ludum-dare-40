@@ -15,14 +15,14 @@ uniform sampler2D textureSampler;
 uniform float time;
 
 void main(void) {
-    vec3 color = vec3(71. / 255., 184. / 255., 204. / 255.);
+    vec4 color = vec4(0., 0., 0., 0.);
     float c = vPositionW.y;
 
     if (abs(c0 + h0) < 0.05) {
-        color = vec3(1., 1., 1.);
+        color = vec4(1., 1., 1., 1.);
     } else if (abs(c1 + h1) < 0.05) {
-        color = vec3(0.5, 0.5, 0.5);
+        color = vec4(0.5, 0.5, 0.5, 1.);
     }
 
-    gl_FragColor = vec4(color, 1.);
+    gl_FragColor = color;
 }

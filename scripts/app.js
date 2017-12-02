@@ -96,7 +96,12 @@ class Sea {
     instantiate(scene) {
         this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", { width: 512, height: 512, subdivisions: 512 }, scene);
         this.mesh.material = new SeaMaterial("SeaMaterial", scene);
-        this.mesh.material.wireframe = false;
+        let bottom = BABYLON.MeshBuilder.CreateGround("Sea", { width: 512, height: 512, subdivisions: 512 }, scene);
+        bottom.position.y = -5;
+        let bottomMaterial = new BABYLON.StandardMaterial("BottomMaterial", scene);
+        bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#7ee5f7");
+        bottomMaterial.specularColor.copyFromFloats(0, 0, 0);
+        bottom.material = bottomMaterial;
     }
     wavesSum(x, y, t) {
         let s = 0;
@@ -106,16 +111,22 @@ class Sea {
         return s;
     }
     evaluate(x, y) {
+        return 0;
+        /*
         let h = 0;
+
         let i = Math.floor(x);
         let i1 = i + 1;
         let dx = x - i;
         let j = Math.floor(y);
         let j1 = j + 1;
         let dy = y - j;
+
         let hX0 = BABYLON.Scalar.Lerp(this.wavesSum(i, j, this.time), this.wavesSum(i1, j, this.time), dx);
         let hX1 = BABYLON.Scalar.Lerp(this.wavesSum(i, j1, this.time), this.wavesSum(i1, j1, this.time), dx);
+
         return BABYLON.Scalar.Lerp(hX0, hX1, dy);
+        */
     }
 }
 class SeaMaterial extends BABYLON.ShaderMaterial {
@@ -125,7 +136,8 @@ class SeaMaterial extends BABYLON.ShaderMaterial {
             fragment: "sea",
         }, {
             attributes: ["position", "normal", "uv"],
-            uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
+            uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"],
+            needAlphaBlending: true
         });
         this.t = 0;
         this.dir0 = BABYLON.Vector2.Zero();
@@ -172,22 +184,31 @@ class Ship {
                 let dir = this.target.subtract(this.instance.position);
                 let forward = this.instance.getDirection(BABYLON.Axis.Z);
                 let targetSpeed = BABYLON.Vector3.Distance(this.target, this.instance.position) / 10 * 5;
-                targetSpeed = Math.min(Math.max(targetSpeed, 0), 5);
-                this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.01);
+                targetSpeed = Math.min(Math.max(targetSpeed, 0), 10);
+                this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.005);
                 this.instance.position.x += forward.x * deltaTime / 1000 * this.speed;
                 this.instance.position.z += forward.z * deltaTime / 1000 * this.speed;
                 this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
                 let alpha = LDMath.AngleFromToAround(forward, dir, BABYLON.Axis.Y);
+                /*
                 if (this.debugDir) {
                     this.debugDir.dispose();
+                   
                 }
-                this.debugDir = BABYLON.RayHelper.CreateAndShow(new BABYLON.Ray(this.instance.position, dir, 10), this.instance.getScene(), BABYLON.Color3.Blue());
+                this.debugDir = BABYLON.RayHelper.CreateAndShow(
+                    new BABYLON.Ray(this.instance.position, dir, 10), this.instance.getScene(), BABYLON.Color3.Blue()
+                );
                 if (this.debugZ) {
                     this.debugZ.dispose();
                 }
-                this.debugZ = BABYLON.RayHelper.CreateAndShow(new BABYLON.Ray(this.instance.position, forward, 10), this.instance.getScene(), BABYLON.Color3.Red());
+                this.debugZ = BABYLON.RayHelper.CreateAndShow(
+                    new BABYLON.Ray(this.instance.position, forward, 10), this.instance.getScene(), BABYLON.Color3.Red()
+                );
+                */
                 if (isFinite(alpha)) {
-                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
+                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 16 * deltaTime / 1000));
+                    this.container.rotation.x = -Math.PI / 16 * this.speed / 10;
+                    this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
                 }
             }
         };
@@ -196,12 +217,14 @@ class Ship {
     instantiate(scene, callback) {
         BABYLON.SceneLoader.ImportMesh("", "./data/ship.babylon", "", scene, (meshes) => {
             this.instance = new BABYLON.Mesh("Ship", scene);
+            this.container = new BABYLON.Mesh("Container", scene);
+            this.container.parent = this.instance;
             meshes.forEach((m) => {
                 m.material = new ToonMaterial("ToonMaterial", scene);
                 m.renderOutline = true;
                 m.outlineColor = BABYLON.Color3.Black();
                 m.outlineWidth = 0.01;
-                m.parent = this.instance;
+                m.parent = this.container;
             });
             scene.registerBeforeRender(this._update);
             if (callback) {

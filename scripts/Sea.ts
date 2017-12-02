@@ -28,7 +28,13 @@ class Sea {
     public instantiate(scene: BABYLON.Scene): void {
         this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", {width: 512, height: 512, subdivisions: 512}, scene);
         this.mesh.material = new SeaMaterial("SeaMaterial", scene);
-        this.mesh.material.wireframe = false;
+        
+        let bottom = BABYLON.MeshBuilder.CreateGround("Sea", {width: 512, height: 512, subdivisions: 512}, scene);
+        bottom.position.y = -5;
+        let bottomMaterial = new BABYLON.StandardMaterial("BottomMaterial", scene);
+        bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#7ee5f7");
+        bottomMaterial.specularColor.copyFromFloats(0, 0, 0);
+        bottom.material = bottomMaterial;
     }
 
     private wavesSum(x: number, y: number, t: number): number {
@@ -40,6 +46,8 @@ class Sea {
     }
 
     public evaluate(x: number, y: number): number {
+        return 0;
+        /*
         let h = 0;
 
         let i = Math.floor(x);
@@ -53,5 +61,6 @@ class Sea {
         let hX1 = BABYLON.Scalar.Lerp(this.wavesSum(i, j1, this.time), this.wavesSum(i1, j1, this.time), dx);
 
         return BABYLON.Scalar.Lerp(hX0, hX1, dy);
+        */
     }
 }

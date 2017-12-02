@@ -19,7 +19,8 @@ class SeaMaterial extends BABYLON.ShaderMaterial {
             },
             {
                 attributes: ["position", "normal", "uv"],
-                uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
+                uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"],
+                needAlphaBlending: true
             }
         );
         this.dir0 = new BABYLON.Vector2(Math.random(), Math.random()).normalize();
