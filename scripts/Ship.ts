@@ -1,9 +1,10 @@
 class Ship {
 
     public instance: BABYLON.AbstractMesh;
+    public sea: Sea;
 
-    constructor() {
-
+    constructor(sea: Sea) {
+        this.sea = sea;
     }
 
     public instantiate(scene: BABYLON.Scene, callback?: () => void): void {

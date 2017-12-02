@@ -3,12 +3,25 @@ class Sea {
     public mesh: BABYLON.Mesh;
     public size: number = 0;
     public heightMap: number[][];
+    public waves: Wave[];
+    public time: number = 0;
 
     constructor(size: number) {
         this.size = size;
         this.heightMap = [];
-        for (let i = 0; i < this.size; i++) {
+        for (let i = 0; i <= this.size; i++) {
             this.heightMap[i] = [];
+        }
+        this.waves = [];
+        for (let i: number = 0; i < 6; i++) {
+            this.waves.push(
+                new Wave(
+                    Math.random() / 4,
+                    Math.random() / 1,
+                    5 * Math.random(),
+                    new BABYLON.Vector2(Math.random(), Math.random()).normalize()
+                )
+            )
         }
     }
 
@@ -21,7 +34,7 @@ class Sea {
         this.mesh.position.x = -this.size / 2;
         this.mesh.position.z = -this.size / 2;
         this.mesh.material = seaMaterial;
-        
+
         let positions = [];
         let indices = [];
 
@@ -53,16 +66,43 @@ class Sea {
         data.indices = indices;
         data.applyToMesh(this.mesh, true);
 
-        this.update();
+        scene.registerBeforeRender(this._update);
     }
 
-    public update(): void {
+    private wavesSum(x: number, y: number, t: number): number {
+        let s = 0;
+        for (let i: number = 0; i < this.waves.length; i++) {
+            s += this.waves[i].evaluate(x, y, t);
+        }
+        return s;
+    }
+
+    private evaluate(x: number, y: number): number {
+        let h = 0;
+
+        let i = Math.floor(x);
+        let i1 = i + 1;
+        let dx = x - i;
+        let j = Math.floor(y);
+        let j1 = j + 1;
+        let dy = y - j;
+
+        let hX0 = BABYLON.Scalar.Lerp(this.heightMap[i][j], this.heightMap[i1][j], dx);
+        let hX1 = BABYLON.Scalar.Lerp(this.heightMap[i][j1], this.heightMap[i1][j1], dx);
+
+        return BABYLON.Scalar.Lerp(hX0, hX1, dy);
+    }
+
+    private _update = () => {
+        this.time = (new Date()).getTime() / 1000;
         let positions = [];
         let indices = [];
 
         for (let j = 0; j <= this.size; j++) {
             for (let i = 0; i <= this.size; i++) {
-                positions.push(i, 0, j);
+                let h = this.wavesSum(i, j, this.time);
+                positions.push(i, h, j);
+                this.heightMap[i][j] = h;
             }
         }
 

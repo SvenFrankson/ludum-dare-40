@@ -29,17 +29,43 @@ window.addEventListener("DOMContentLoaded", () => {
     game.animate();
     let ship = new Ship();
     ship.instantiate(game.scene);
-    let seaSize = 64;
+    let seaSize = 128;
     let sea = new Sea(seaSize);
     sea.instantiate(game.scene);
 });
 class Sea {
     constructor(size) {
         this.size = 0;
+        this.time = 0;
+        this._update = () => {
+            this.time = (new Date()).getTime() / 1000;
+            let positions = [];
+            let indices = [];
+            for (let j = 0; j <= this.size; j++) {
+                for (let i = 0; i <= this.size; i++) {
+                    let h = this.wavesSum(i, j, this.time);
+                    positions.push(i, h, j);
+                    this.heightMap[i][j] = h;
+                }
+            }
+            let s = this.size;
+            let s1 = this.size + 1;
+            for (let j = 0; j < this.size; j++) {
+                for (let i = 0; i < this.size; i++) {
+                    indices.push(i + j * s1, i + (j + 1) * s1, (i + 1) + j * s1);
+                    indices.push(i + (j + 1) * s1, (i + 1) + (j + 1) * s1, (i + 1) + j * s1);
+                }
+            }
+            this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions, true, false);
+        };
         this.size = size;
         this.heightMap = [];
-        for (let i = 0; i < this.size; i++) {
+        for (let i = 0; i <= this.size; i++) {
             this.heightMap[i] = [];
+        }
+        this.waves = [];
+        for (let i = 0; i < 6; i++) {
+            this.waves.push(new Wave(Math.random() / 4, Math.random() / 1, 5 * Math.random(), new BABYLON.Vector2(Math.random(), Math.random()).normalize()));
         }
     }
     instantiate(scene) {
@@ -69,25 +95,26 @@ class Sea {
         data.positions = positions;
         data.indices = indices;
         data.applyToMesh(this.mesh, true);
-        this.update();
+        scene.registerBeforeRender(this._update);
     }
-    update() {
-        let positions = [];
-        let indices = [];
-        for (let j = 0; j <= this.size; j++) {
-            for (let i = 0; i <= this.size; i++) {
-                positions.push(i, 0, j);
-            }
+    wavesSum(x, y, t) {
+        let s = 0;
+        for (let i = 0; i < this.waves.length; i++) {
+            s += this.waves[i].evaluate(x, y, t);
         }
-        let s = this.size;
-        let s1 = this.size + 1;
-        for (let j = 0; j < this.size; j++) {
-            for (let i = 0; i < this.size; i++) {
-                indices.push(i + j * s1, i + (j + 1) * s1, (i + 1) + j * s1);
-                indices.push(i + (j + 1) * s1, (i + 1) + (j + 1) * s1, (i + 1) + j * s1);
-            }
-        }
-        this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions, true, false);
+        return s;
+    }
+    evaluate(x, y) {
+        let h = 0;
+        let i = Math.floor(x);
+        let i1 = i + 1;
+        let dx = x - i;
+        let j = Math.floor(y);
+        let j1 = j + 1;
+        let dy = y - j;
+        let hX0 = BABYLON.Scalar.Lerp(this.heightMap[i][j], this.heightMap[i1][j], dx);
+        let hX1 = BABYLON.Scalar.Lerp(this.heightMap[i][j1], this.heightMap[i1][j1], dx);
+        return BABYLON.Scalar.Lerp(hX0, hX1, dy);
     }
 }
 class Ship {
@@ -120,5 +147,22 @@ class ToonMaterial extends BABYLON.ShaderMaterial {
             }
         };
         scene.registerBeforeRender(this._updateCameraPosition);
+    }
+}
+class Wave {
+    constructor(amplitude, speed, period, direction) {
+        this.amplitude = amplitude;
+        this.speed = speed;
+        this.period = period;
+        this.direction = direction;
+        this._evaluatePos = BABYLON.Vector2.Zero();
+    }
+    evaluate(x, y, t) {
+        let v = 0;
+        this._evaluatePos.x = x;
+        this._evaluatePos.y = y;
+        let d = BABYLON.Vector2.Dot(this._evaluatePos, this.direction);
+        v = Math.sin(d + (t * this.speed) * this.period) * this.amplitude;
+        return v;
     }
 }
