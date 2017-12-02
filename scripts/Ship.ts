@@ -13,7 +13,11 @@ class Ship {
             "",
             scene,
             (meshes) => {
-                
+                meshes.forEach(
+                    (m) => {
+                        m.material = new ToonMaterial("ToonMaterial", scene);
+                    }
+                )
             }
         )
     }

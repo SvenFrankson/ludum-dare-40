@@ -9,10 +9,12 @@ class Main {
 	constructor(canvasElement: string) {
 		this.canvas = document.getElementById(canvasElement) as HTMLCanvasElement;
 		this.engine = new BABYLON.Engine(this.canvas, true);
+		BABYLON.Engine.ShadersRepository = "./shaders/";
 	}
 	
 	createScene(): void {
 		this.scene = new BABYLON.Scene(this.engine);
+		this.scene.clearColor.copyFromFloats(1, 1, 1, 1);
 		this.resize();
 
 		this.light = new BABYLON.HemisphericLight("Light", (new BABYLON.Vector3(0.5, 0.65, 0.8)).normalize(), this.scene);
