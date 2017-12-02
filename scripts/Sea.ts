@@ -77,7 +77,7 @@ class Sea {
         return s;
     }
 
-    private evaluate(x: number, y: number): number {
+    public evaluate(x: number, y: number): number {
         let h = 0;
 
         let i = Math.floor(x);

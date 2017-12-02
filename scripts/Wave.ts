@@ -16,7 +16,7 @@ class Wave {
         this._evaluatePos.y = y;
 
         let d = BABYLON.Vector2.Dot(this._evaluatePos, this.direction);
-        v = Math.sin(d + (t * this.speed) * this.period) * this.amplitude;
+        v = (Math.sin(d + (t * this.speed) * this.period) + Math.sin(d + (t * this.speed / 2) * this.period)) * this.amplitude;
 
         return v;
     }

@@ -41,11 +41,11 @@ window.addEventListener("DOMContentLoaded", () => {
 	let game: Main = new Main("render-canvas");
 	game.createScene();
 	game.animate();
-
-	let ship = new Ship();
-	ship.instantiate(game.scene);
-
-	let seaSize = 128;
+	
+	let seaSize = 64;
 	let sea = new Sea(seaSize);
 	sea.instantiate(game.scene);
+
+	let ship = new Ship(sea);
+	ship.instantiate(game.scene);
 });

@@ -27,11 +27,11 @@ window.addEventListener("DOMContentLoaded", () => {
     let game = new Main("render-canvas");
     game.createScene();
     game.animate();
-    let ship = new Ship();
-    ship.instantiate(game.scene);
-    let seaSize = 128;
+    let seaSize = 64;
     let sea = new Sea(seaSize);
     sea.instantiate(game.scene);
+    let ship = new Ship(sea);
+    ship.instantiate(game.scene);
 });
 class Sea {
     constructor(size) {
@@ -118,15 +118,21 @@ class Sea {
     }
 }
 class Ship {
-    constructor() {
+    constructor(sea) {
+        this.sea = sea;
     }
     instantiate(scene, callback) {
         BABYLON.SceneLoader.ImportMesh("", "./data/ship.babylon", "", scene, (meshes) => {
+            this.instance = new BABYLON.Mesh("Ship", scene);
             meshes.forEach((m) => {
                 m.material = new ToonMaterial("ToonMaterial", scene);
                 m.renderOutline = true;
                 m.outlineColor = BABYLON.Color3.Black();
                 m.outlineWidth = 0.01;
+                m.parent = this.instance;
+            });
+            scene.registerBeforeRender(() => {
+                this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
             });
         });
     }
@@ -162,7 +168,7 @@ class Wave {
         this._evaluatePos.x = x;
         this._evaluatePos.y = y;
         let d = BABYLON.Vector2.Dot(this._evaluatePos, this.direction);
-        v = Math.sin(d + (t * this.speed) * this.period) * this.amplitude;
+        v = (Math.sin(d + (t * this.speed) * this.period) + Math.sin(d + (t * this.speed / 2) * this.period)) * this.amplitude;
         return v;
     }
 }
