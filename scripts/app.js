@@ -83,27 +83,6 @@ class Sea {
     constructor(size) {
         this.size = 0;
         this.time = 0;
-        this._update = () => {
-            this.time = (new Date()).getTime() / 1000;
-            let positions = [];
-            let indices = [];
-            for (let j = 0; j <= this.size; j++) {
-                for (let i = 0; i <= this.size; i++) {
-                    let h = this.wavesSum(i, j, this.time);
-                    positions.push(i, h, j);
-                    this.heightMap[i][j] = h;
-                }
-            }
-            let s = this.size;
-            let s1 = this.size + 1;
-            for (let j = 0; j < this.size; j++) {
-                for (let i = 0; i < this.size; i++) {
-                    indices.push(i + j * s1, i + (j + 1) * s1, (i + 1) + j * s1);
-                    indices.push(i + (j + 1) * s1, (i + 1) + (j + 1) * s1, (i + 1) + j * s1);
-                }
-            }
-            this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions, true, false);
-        };
         this.size = size;
         this.heightMap = [];
         for (let i = 0; i <= this.size; i++) {
@@ -115,31 +94,8 @@ class Sea {
         }
     }
     instantiate(scene) {
-        let seaMaterial = new BABYLON.StandardMaterial("SeaMaterial", scene);
-        seaMaterial.specularColor.copyFromFloats(0, 0, 0);
-        seaMaterial.wireframe = true;
-        this.mesh = new BABYLON.Mesh("Sea", scene);
-        this.mesh.material = seaMaterial;
-        let positions = [];
-        let indices = [];
-        for (let j = 0; j <= this.size; j++) {
-            for (let i = 0; i <= this.size; i++) {
-                positions.push(i, 0, j);
-            }
-        }
-        let s = this.size;
-        let s1 = this.size + 1;
-        for (let j = 0; j < this.size; j++) {
-            for (let i = 0; i < this.size; i++) {
-                indices.push(i + (j + 1) * s1, i + j * s1, (i + 1) + j * s1);
-                indices.push((i + 1) + (j + 1) * s1, i + (j + 1) * s1, (i + 1) + j * s1);
-            }
-        }
-        let data = new BABYLON.VertexData();
-        data.positions = positions;
-        data.indices = indices;
-        data.applyToMesh(this.mesh, true);
-        scene.registerBeforeRender(this._update);
+        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", { width: 256, height: 256, subdivisions: 256 }, scene);
+        this.mesh.material = new SeaMaterial("SeaMaterial", scene);
     }
     wavesSum(x, y, t) {
         let s = 0;
@@ -159,6 +115,22 @@ class Sea {
         let hX0 = BABYLON.Scalar.Lerp(this.wavesSum(i, j, this.time), this.wavesSum(i1, j, this.time), dx);
         let hX1 = BABYLON.Scalar.Lerp(this.wavesSum(i, j1, this.time), this.wavesSum(i1, j1, this.time), dx);
         return BABYLON.Scalar.Lerp(hX0, hX1, dy);
+    }
+}
+class SeaMaterial extends BABYLON.ShaderMaterial {
+    constructor(name, scene) {
+        super(name, scene, {
+            vertex: "sea",
+            fragment: "sea",
+        }, {
+            attributes: ["position", "normal", "uv"],
+            uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
+        });
+        this.t = 0;
+        this._updateTime = () => {
+            this.setFloat("time", this.t++ / 60);
+        };
+        scene.registerBeforeRender(this._updateTime);
     }
 }
 class Ship {
