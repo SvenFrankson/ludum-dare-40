@@ -59,8 +59,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	let shipControler = new ShipControler(ship, game.scene);
 
-	game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", {width: seaSize, height: seaSize}, game.scene);
-	game.groundZero.position.x += seaSize / 2;
-	game.groundZero.position.z += seaSize / 2;
+	game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", {width: seaSize * 10, height: seaSize * 10}, game.scene);
 	game.groundZero.isVisible = false;
 });

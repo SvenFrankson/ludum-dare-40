@@ -85,8 +85,8 @@ class Sea {
         let j1 = j + 1;
         let dy = y - j;
 
-        let hX0 = BABYLON.Scalar.Lerp(this.heightMap[i][j], this.heightMap[i1][j], dx);
-        let hX1 = BABYLON.Scalar.Lerp(this.heightMap[i][j1], this.heightMap[i1][j1], dx);
+        let hX0 = BABYLON.Scalar.Lerp(this.wavesSum(i, j, this.time), this.wavesSum(i1, j, this.time), dx);
+        let hX1 = BABYLON.Scalar.Lerp(this.wavesSum(i, j1, this.time), this.wavesSum(i1, j1, this.time), dx);
 
         return BABYLON.Scalar.Lerp(hX0, hX1, dy);
     }
