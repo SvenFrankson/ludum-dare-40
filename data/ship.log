@@ -7,16 +7,71 @@ Exporter version: 5.4.2, Blender version: 2.78 (sub 0)
 		texture directory:  C:\Users\Sven\Documents\SvenFrankson\ludum-dare-40\data\
 	Python World class constructor completed
 	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
-	processing begun of mesh:  Shell.004
+	processing begun of mesh:  Shell.003
 		WARNING: No materials have been assigned: 
-		num positions      :  1275
-		num normals        :  1275
+		num positions      :  60
+		num normals        :  60
 		num uvs            :  0
 		num uvs2           :  0
 		num colors         :  0
-		num indices        :  6270
-		WARNING: # of 0 area faces found:  224
+		num indices        :  348
+	processing begun of mesh:  Circle
+		WARNING: No materials have been assigned: 
+		num positions      :  384
+		num normals        :  384
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  2304
+	processing begun of mesh:  Shell.002
+		WARNING: No materials have been assigned: 
+		num positions      :  68
+		num normals        :  68
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  396
+	processing begun of mesh:  Shell.001
+		WARNING: No materials have been assigned: 
+		num positions      :  216
+		num normals        :  216
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  648
+	processing begun of mesh:  Cube.001
+		WARNING: No materials have been assigned: 
+		num positions      :  58
+		num normals        :  58
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  336
+	processing begun of mesh:  Cube
+		WARNING: No materials have been assigned: 
+		num positions      :  162
+		num normals        :  162
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  960
+	processing begun of mesh:  Cabin
+		WARNING: No materials have been assigned: 
+		num positions      :  136
+		num normals        :  136
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  774
+	processing begun of mesh:  Shell
+		WARNING: No materials have been assigned: 
+		num positions      :  66
+		num normals        :  66
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  336
 ========= Writing of scene file started =========
 ========= Writing of scene file completed =========
 ========= end of processing =========
-elapsed time:  0 min, 0.3137 secs
+elapsed time:  0 min, 0.2903 secs

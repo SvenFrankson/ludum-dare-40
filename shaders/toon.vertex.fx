@@ -19,4 +19,3 @@ void main(void) {
     vPositionW = vec3(world * vec4(position, 1.0));
     vNormalW = normalize(vec3(world * vec4(normal, 0.0)));
 }
-    

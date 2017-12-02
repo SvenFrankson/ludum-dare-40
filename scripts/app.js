@@ -37,6 +37,9 @@ class Ship {
         BABYLON.SceneLoader.ImportMesh("", "./data/ship.babylon", "", scene, (meshes) => {
             meshes.forEach((m) => {
                 m.material = new ToonMaterial("ToonMaterial", scene);
+                m.renderOutline = true;
+                m.outlineColor = BABYLON.Color3.Black();
+                m.outlineWidth = 0.01;
             });
         });
     }
