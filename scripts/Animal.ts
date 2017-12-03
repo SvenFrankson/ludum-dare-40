@@ -53,7 +53,7 @@ class Turtle extends Animal {
             let fishMaterial = new BABYLON.StandardMaterial("TurtleMaterial", scene);
             fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
             fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
             this.instance.material = fishMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
@@ -77,7 +77,7 @@ class Fish extends Animal {
             let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
             fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
             fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
             this.instance.material = fishMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();

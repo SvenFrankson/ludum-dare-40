@@ -36,7 +36,7 @@ class Turtle extends Animal {
             let fishMaterial = new BABYLON.StandardMaterial("TurtleMaterial", scene);
             fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
             fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
             this.instance.material = fishMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
@@ -57,7 +57,7 @@ class Fish extends Animal {
             let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
             fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
             fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
             this.instance.material = fishMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
@@ -66,6 +66,30 @@ class Fish extends Animal {
             if (callback) {
                 callback();
             }
+        });
+    }
+}
+class FishNet {
+    constructor(ship) {
+        this.ship = ship;
+        this._updateFishNet = () => {
+            if (this.ship && this.instance) {
+                this.instance.position.y = this.ship.instance.position.y;
+                let dir = this.ship.instance.position.subtract(this.instance.position);
+                dir.normalize();
+                this.instance.position = this.ship.instance.position.subtract(dir.scale(10));
+                this.instance.lookAt(this.ship.instance.position, Math.PI);
+            }
+        };
+    }
+    instantiate(scene) {
+        BABYLON.SceneLoader.ImportMesh("", "./data/fishnet.babylon", "", scene, (meshes) => {
+            this.instance = meshes[0];
+            this.instance.material = new ToonMaterial("ToonMaterial", BABYLON.Color3.Black(), scene);
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.01;
+            scene.registerBeforeRender(this._updateFishNet);
         });
     }
 }
@@ -258,18 +282,19 @@ class SeaMaterial extends BABYLON.ShaderMaterial {
 class Ship {
     constructor(sea) {
         this.target = BABYLON.Vector3.Zero();
-        this.speed = 0;
+        this.velocity = BABYLON.Vector3.Zero();
         this._update = () => {
             if (this.instance) {
                 let deltaTime = this.instance.getScene().getEngine().getDeltaTime();
                 let dir = this.target.subtract(this.instance.position);
                 let forward = this.instance.getDirection(BABYLON.Axis.Z);
-                let targetSpeed = BABYLON.Vector3.Distance(this.target, this.instance.position) / 10 * 5;
-                targetSpeed = Math.min(Math.max(targetSpeed, 0), 10);
-                this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.005);
-                this.instance.position.x += forward.x * deltaTime / 1000 * this.speed;
-                this.instance.position.z += forward.z * deltaTime / 1000 * this.speed;
-                this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
+                let speedInput = BABYLON.Vector3.Distance(this.target, this.instance.position) / 20;
+                speedInput = Math.min(Math.max(speedInput, 0), 1);
+                this.velocity.scaleInPlace(0.99);
+                this.velocity.addInPlace(forward.scale(speedInput / 5));
+                this.instance.position.x += this.velocity.x * deltaTime / 1000;
+                this.instance.position.z += this.velocity.z * deltaTime / 1000;
+                this.instance.position.y = -0.5;
                 let alpha = LDMath.AngleFromToAround(forward, dir, BABYLON.Axis.Y);
                 /*
                 if (this.debugDir) {
@@ -288,7 +313,7 @@ class Ship {
                 */
                 if (isFinite(alpha)) {
                     this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
-                    this.container.rotation.x = -Math.PI / 16 * this.speed / 10;
+                    this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
                     this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
                 }
             }
@@ -309,6 +334,7 @@ class Ship {
             });
             new ShipTrail(this.instance.position, this.instance, 0.6, scene);
             new ShipTrail(this.instance.position, this.instance, -0.6, scene);
+            (new FishNet(this)).instantiate(scene);
             scene.registerBeforeRender(this._update);
             if (callback) {
                 callback();
@@ -319,11 +345,10 @@ class Ship {
 class ShipCamera extends BABYLON.FreeCamera {
     constructor(name, ship, scene) {
         super(name, BABYLON.Vector3.Zero(), scene);
-        this.smoothness = 60;
+        this.smoothness = 30;
         this._update = () => {
             if (this.ship && this.ship.instance) {
                 let targetPos = this.ship.instance.position.clone();
-                targetPos.y = 3;
                 let cameraPos = this.ship.instance.getDirection(BABYLON.Axis.Z);
                 cameraPos.y = 0;
                 cameraPos.scaleInPlace(-20);
@@ -376,7 +401,6 @@ class ShipTrail extends BABYLON.Mesh {
                 positions.push(this.points[i].x + this.normals[i].x * i / this.length, this.points[i].y + this.normals[i].y * i / this.length, this.points[i].z + this.normals[i].z * i / this.length);
                 positions.push(this.points[i].x - this.normals[i].x * i / this.length, this.points[i].y - this.normals[i].y * i / this.length, this.points[i].z - this.normals[i].z * i / this.length);
             }
-            console.log(positions.length);
             this.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions, false);
             this.computeWorldMatrix(true);
             this.refreshBoundingInfo();

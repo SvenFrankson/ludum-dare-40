@@ -4,7 +4,8 @@ class Ship {
     public container: BABYLON.AbstractMesh;
     public sea: Sea;
     public target: BABYLON.Vector3 = BABYLON.Vector3.Zero();
-    public speed: number = 0;
+
+    public velocity: BABYLON.Vector3 = BABYLON.Vector3.Zero();
 
     constructor(sea: Sea) {
         this.sea = sea;
@@ -18,13 +19,14 @@ class Ship {
             let dir: BABYLON.Vector3 = this.target.subtract(this.instance.position);
             let forward: BABYLON.Vector3 = this.instance.getDirection(BABYLON.Axis.Z);
 
-            let targetSpeed = BABYLON.Vector3.Distance(this.target, this.instance.position) / 10 * 5;
-            targetSpeed = Math.min(Math.max(targetSpeed, 0), 10);
-            this.speed = BABYLON.Scalar.Lerp(this.speed, targetSpeed, 0.005);
+            let speedInput = BABYLON.Vector3.Distance(this.target, this.instance.position) / 20;
+            speedInput = Math.min(Math.max(speedInput, 0), 1);
+            this.velocity.scaleInPlace(0.99);
+            this.velocity.addInPlace(forward.scale(speedInput / 5));
 
-            this.instance.position.x += forward.x * deltaTime / 1000 * this.speed;
-            this.instance.position.z += forward.z * deltaTime / 1000 * this.speed;
-            this.instance.position.y = this.sea.evaluate(this.instance.position.x, this.instance.position.z);
+            this.instance.position.x += this.velocity.x * deltaTime / 1000;
+            this.instance.position.z += this.velocity.z * deltaTime / 1000;
+            this.instance.position.y = -0.5;
 
             let alpha = LDMath.AngleFromToAround(forward, dir, BABYLON.Axis.Y);
             /*
@@ -44,7 +46,7 @@ class Ship {
             */
             if (isFinite(alpha)) {
                 this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
-                this.container.rotation.x = -Math.PI / 16 * this.speed / 10;
+                this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
                 this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
             }
         }
@@ -71,6 +73,7 @@ class Ship {
                 );
                 new ShipTrail(this.instance.position, this.instance, 0.6, scene);
                 new ShipTrail(this.instance.position, this.instance, -0.6, scene);
+                (new FishNet(this)).instantiate(scene);
                 scene.registerBeforeRender(this._update);
                 if (callback) {
                     callback();

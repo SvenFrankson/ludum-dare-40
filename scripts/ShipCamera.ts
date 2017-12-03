@@ -1,6 +1,6 @@
 class ShipCamera extends BABYLON.FreeCamera {
 
-    public smoothness: number = 60;
+    public smoothness: number = 30;
     public ship: Ship;
 
     constructor(name: string, ship: Ship, scene: BABYLON.Scene) {
@@ -12,7 +12,6 @@ class ShipCamera extends BABYLON.FreeCamera {
     private _update = () => {
         if (this.ship && this.ship.instance) {
             let targetPos = this.ship.instance.position.clone();
-            targetPos.y = 3;
 
             let cameraPos = this.ship.instance.getDirection(BABYLON.Axis.Z);
             cameraPos.y = 0;

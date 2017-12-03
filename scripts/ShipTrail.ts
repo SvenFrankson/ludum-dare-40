@@ -56,7 +56,6 @@ class ShipTrail extends BABYLON.Mesh {
             positions.push(this.points[i].x + this.normals[i].x * i / this.length, this.points[i].y + this.normals[i].y * i / this.length, this.points[i].z + this.normals[i].z * i / this.length);
             positions.push(this.points[i].x - this.normals[i].x * i / this.length, this.points[i].y - this.normals[i].y * i / this.length, this.points[i].z - this.normals[i].z * i / this.length);
         }
-        console.log(positions.length);
 
         this.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions, false);
         this.computeWorldMatrix(true);
