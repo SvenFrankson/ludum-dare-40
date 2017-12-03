@@ -88,6 +88,20 @@ html, body {
     pointer-events: none;
 }
 
+#messages {
+    position: absolute;
+    font-family: "Raleway";
+    width: 100%;
+    margin: 0px;
+    bottom: 5%;
+    left: 0px;
+    z-index: 2;
+    text-align: center;
+    pointer-events: none;
+    font-size: 36px;
+    color: white;
+}
+
 .in-game-info {
     font-size: 30px;
     color: white;

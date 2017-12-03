@@ -101,11 +101,34 @@ class Main {
 	public playButtonClic(): void {
 		$("#gui").fadeOut(600, undefined, () => {
 			this.score = 0;
-			this.playing = true;
 			this.timer = 30;
 			$("#in-game").fadeIn(300, undefined, () => {
-
-			})
+				this.playing = true;
+				$("#message-1").fadeIn(300, undefined, () => {
+					setTimeout(
+						() => {
+							$("#message-2").fadeIn(300, undefined, () => {
+								$("#message-1").fadeOut(300);
+								setTimeout(
+									() => {
+										$("#message-3").fadeIn(300, undefined, () => {
+											$("#message-2").fadeOut(300);
+											setTimeout(
+												() => {
+													$("#message-3").fadeOut(300);
+												},
+												2300
+											);
+										});
+									},
+									2000
+								);
+							});
+						},
+						2000
+					);
+				});
+			});
 		})
 	}
 
