@@ -19,6 +19,12 @@ class Main {
 	}
 	public timer = 0;
 
+	public fishMaterial: BABYLON.StandardMaterial;
+	public codMaterial: BABYLON.StandardMaterial;
+	public turtleMaterial: BABYLON.StandardMaterial;
+	public tunaMaterial: BABYLON.StandardMaterial;
+	public seaBottomMaterial: BABYLON.StandardMaterial;
+
 	constructor(canvasElement: string) {
 		Main.instance = this;
 		this.canvas = document.getElementById(canvasElement) as HTMLCanvasElement;
@@ -76,6 +82,26 @@ window.addEventListener("DOMContentLoaded", () => {
 	let game: Main = new Main("render-canvas");
 	game.createScene();
 	game.animate();
+
+	game.fishMaterial = new BABYLON.StandardMaterial("FishMaterial", game.scene);
+	game.fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#4aa9d6");
+	game.fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+	game.fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+	
+	game.turtleMaterial = new BABYLON.StandardMaterial("TurtleMaterial", game.scene);
+	game.turtleMaterial.diffuseColor = BABYLON.Color3.FromHexString("#4ad658");
+	game.turtleMaterial.specularColor.copyFromFloats(0, 0, 0);
+	game.turtleMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+		
+	game.tunaMaterial = new BABYLON.StandardMaterial("TunaMaterial", game.scene);
+	game.tunaMaterial.diffuseColor = BABYLON.Color3.FromHexString("#d64a78");
+	game.tunaMaterial.specularColor.copyFromFloats(0, 0, 0);
+	game.tunaMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+
+	game.seaBottomMaterial = new BABYLON.StandardMaterial("SeaBottomMaterial", game.scene);
+	game.seaBottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#000000");
+	game.seaBottomMaterial.specularColor.copyFromFloats(0, 0, 0);
+	game.seaBottomMaterial.emissiveColor = BABYLON.Color3.FromHexString("#191919");
 
 	$("#play-button").on("click", () => {
 		game.playButtonClic();

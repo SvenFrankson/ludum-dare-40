@@ -53,11 +53,7 @@ class Turtle extends Protected {
     }
     instantiate(position, scene, callback) {
         super.instantiate(position, scene, () => {
-            let fishMaterial = new BABYLON.StandardMaterial("TurtleMaterial", scene);
-            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
-            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
-            this.instance.material = fishMaterial;
+            this.instance.material = Main.instance.turtleMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
@@ -78,11 +74,7 @@ class Tuna extends Protected {
     }
     instantiate(position, scene, callback) {
         super.instantiate(position, scene, () => {
-            let fishMaterial = new BABYLON.StandardMaterial("TunaMaterial", scene);
-            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
-            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
-            this.instance.material = fishMaterial;
+            this.instance.material = Main.instance.tunaMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
@@ -109,11 +101,7 @@ class Fish extends Fishable {
     }
     instantiate(position, scene, callback) {
         super.instantiate(position, scene, () => {
-            let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
-            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
-            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
-            this.instance.material = fishMaterial;
+            this.instance.material = Main.instance.fishMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
@@ -134,11 +122,7 @@ class Cod extends Fishable {
     }
     instantiate(position, scene, callback) {
         super.instantiate(position, scene, () => {
-            let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
-            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
-            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
-            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
-            this.instance.material = fishMaterial;
+            this.instance.material = Main.instance.fishMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
@@ -389,6 +373,22 @@ window.addEventListener("DOMContentLoaded", () => {
     let game = new Main("render-canvas");
     game.createScene();
     game.animate();
+    game.fishMaterial = new BABYLON.StandardMaterial("FishMaterial", game.scene);
+    game.fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#4aa9d6");
+    game.fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+    game.fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+    game.turtleMaterial = new BABYLON.StandardMaterial("TurtleMaterial", game.scene);
+    game.turtleMaterial.diffuseColor = BABYLON.Color3.FromHexString("#4ad658");
+    game.turtleMaterial.specularColor.copyFromFloats(0, 0, 0);
+    game.turtleMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+    game.tunaMaterial = new BABYLON.StandardMaterial("TunaMaterial", game.scene);
+    game.tunaMaterial.diffuseColor = BABYLON.Color3.FromHexString("#d64a78");
+    game.tunaMaterial.specularColor.copyFromFloats(0, 0, 0);
+    game.tunaMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+    game.seaBottomMaterial = new BABYLON.StandardMaterial("SeaBottomMaterial", game.scene);
+    game.seaBottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#000000");
+    game.seaBottomMaterial.specularColor.copyFromFloats(0, 0, 0);
+    game.seaBottomMaterial.emissiveColor = BABYLON.Color3.FromHexString("#191919");
     $("#play-button").on("click", () => {
         game.playButtonClic();
     });
@@ -483,10 +483,7 @@ class Sea {
         this.mesh.material = new SeaMaterial("SeaMaterial", scene);
         let bottom = BABYLON.MeshBuilder.CreateGround("Sea", { width: 2048, height: 2048, subdivisions: 1 }, scene);
         bottom.position.y = -5;
-        let bottomMaterial = new BABYLON.StandardMaterial("BottomMaterial", scene);
-        bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
-        bottomMaterial.specularColor.copyFromFloats(0, 0, 0);
-        bottom.material = bottomMaterial;
+        bottom.material = Main.instance.seaBottomMaterial;
     }
     wavesSum(x, y, t) {
         let s = 0;
