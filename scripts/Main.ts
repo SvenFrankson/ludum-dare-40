@@ -61,7 +61,7 @@ class Main {
 		$("#gui").fadeOut(600, undefined, () => {
 			this.score = 0;
 			this.playing = true;
-			this.timer = 60;
+			this.timer = 5;
 			$("#in-game").fadeIn(300, undefined, () => {
 
 			})
@@ -112,7 +112,8 @@ window.addEventListener("DOMContentLoaded", () => {
 	});
 	
 	$("#share-button").on("click", () => {
-		location.reload();
+		let tweet = "I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here #LDJAM";
+		window.open("https://twitter.com/intent/tweet?text=" + tweet);
 	});
 
 	game.canvas.addEventListener("pointerdown", () => {

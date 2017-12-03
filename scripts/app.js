@@ -356,7 +356,7 @@ class Main {
         $("#gui").fadeOut(600, undefined, () => {
             this.score = 0;
             this.playing = true;
-            this.timer = 60;
+            this.timer = 5;
             $("#in-game").fadeIn(300, undefined, () => {
             });
         });
@@ -396,7 +396,8 @@ window.addEventListener("DOMContentLoaded", () => {
         location.reload();
     });
     $("#share-button").on("click", () => {
-        location.reload();
+        let tweet = "I just scored " + game.score + " on Some Fin In The Way ! Try it here ";
+        window.open("https://twitter.com/intent/tweet?text=" + tweet);
     });
     game.canvas.addEventListener("pointerdown", () => {
         game.pointerDown = true;
