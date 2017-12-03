@@ -9,23 +9,15 @@ Exporter version: 5.4.2, Blender version: 2.78 (sub 0)
 	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
 	WARNING: The following armature not visible in scene thus ignored: FishArmature
 	WARNING: The following armature not visible in scene thus ignored: Armature
-	processing begun of mesh:  FishNet.001
-		WARNING: No materials have been assigned: 
-		num positions      :  339
-		num normals        :  339
-		num uvs            :  0
-		num uvs2           :  0
-		num colors         :  0
-		num indices        :  2544
 	processing begun of mesh:  FishNet
 		WARNING: No materials have been assigned: 
-		num positions      :  44
-		num normals        :  44
+		num positions      :  383
+		num normals        :  383
 		num uvs            :  0
 		num uvs2           :  0
 		num colors         :  0
-		num indices        :  252
+		num indices        :  2796
 ========= Writing of scene file started =========
 ========= Writing of scene file completed =========
 ========= end of processing =========
-elapsed time:  0 min, 0.2297 secs
+elapsed time:  0 min, 0.2362 secs
