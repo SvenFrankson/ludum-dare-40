@@ -8,8 +8,43 @@ class AnimalManager {
     public protected: Protected[] = [];
     public fishable: Fishable[] = [];
 
+    public datas: Map<string, string> = new Map<string, string>();
+    public loaded: boolean = false;
+
     constructor(public ship: Ship, public scene: BABYLON.Scene) {
         scene.registerBeforeRender(this._updateAnimals);
+    }
+
+    public loadData(): void {
+        $.get(
+            "./data/fish.babylon",
+            "",
+            (content: string) => {
+                this.datas.set("fish", content);
+                $.get(
+                    "./data/cod.babylon",
+                    "",
+                    (content: string) => {
+                        this.datas.set("cod", content);
+                        $.get(
+                            "./data/tuna.babylon",
+                            "",
+                            (content: string) => {
+                                this.datas.set("tuna", content);
+                                $.get(
+                                    "./data/turtle.babylon",
+                                    "",
+                                    (content: string) => {
+                                        this.datas.set("turtle", content);
+                                        this.loaded = true;
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            }
+        );
     }
 
     private addAnimal(animal: Animal) {
@@ -46,6 +81,9 @@ class AnimalManager {
     }
 
     private _updateAnimals = () => {
+        if (!this.loaded) {
+            return;
+        }
         let pCreation = 1 - this.animals.length / this.maxCount;
 
         let p: number = Math.random();

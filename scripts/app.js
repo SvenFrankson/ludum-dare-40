@@ -24,14 +24,19 @@ class Animal {
         }
     }
     instantiate(position, scene, callback) {
-        BABYLON.SceneLoader.ImportMesh("", "./data/" + this.name + ".babylon", "", scene, (meshes) => {
-            this.instance = meshes[0];
-            this.instance.position = position;
-            scene.registerBeforeRender(this._update);
-            if (callback) {
-                callback();
-            }
-        });
+        if (this.manager.datas.get(this.name)) {
+            BABYLON.SceneLoader.ImportMesh("", "", "data:" + this.manager.datas.get(this.name), scene, (meshes) => {
+                this.instance = meshes[0];
+                this.instance.position = position;
+                scene.registerBeforeRender(this._update);
+                if (callback) {
+                    callback();
+                }
+            });
+        }
+        else {
+            this.dispose();
+        }
     }
 }
 class Protected extends Animal {
@@ -147,7 +152,12 @@ class AnimalManager {
         this.animals = [];
         this.protected = [];
         this.fishable = [];
+        this.datas = new Map();
+        this.loaded = false;
         this._updateAnimals = () => {
+            if (!this.loaded) {
+                return;
+            }
             let pCreation = 1 - this.animals.length / this.maxCount;
             let p = Math.random();
             if (p < pCreation) {
@@ -164,6 +174,21 @@ class AnimalManager {
             }
         };
         scene.registerBeforeRender(this._updateAnimals);
+    }
+    loadData() {
+        $.get("./data/fish.babylon", "", (content) => {
+            this.datas.set("fish", content);
+            $.get("./data/cod.babylon", "", (content) => {
+                this.datas.set("cod", content);
+                $.get("./data/tuna.babylon", "", (content) => {
+                    this.datas.set("tuna", content);
+                    $.get("./data/turtle.babylon", "", (content) => {
+                        this.datas.set("turtle", content);
+                        this.loaded = true;
+                    });
+                });
+            });
+        });
     }
     addAnimal(animal) {
         this.animals.push(animal);
@@ -474,6 +499,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ship.instantiate(game.scene, () => {
         let shipControler = new ShipControler(ship, game.scene);
         let manager = new AnimalManager(ship, game.scene);
+        manager.loadData();
         ship.fishnet = new FishNet(ship, manager);
         ship.fishnet.instantiate(game.scene);
     });

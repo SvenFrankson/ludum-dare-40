@@ -16,20 +16,24 @@ abstract class Animal {
     }
 
     public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
-        BABYLON.SceneLoader.ImportMesh(
-            "",
-            "./data/" + this.name + ".babylon",
-            "",
-            scene,
-            (meshes) => {
-                this.instance = meshes[0];
-                this.instance.position = position;
-                scene.registerBeforeRender(this._update);
-                if (callback) {
-                    callback();
+        if (this.manager.datas.get(this.name)) {
+            BABYLON.SceneLoader.ImportMesh(
+                "",
+                "",
+                "data:" + this.manager.datas.get(this.name),
+                scene,
+                (meshes) => {
+                    this.instance = meshes[0];
+                    this.instance.position = position;
+                    scene.registerBeforeRender(this._update);
+                    if (callback) {
+                        callback();
+                    }
                 }
-            }
-        )
+            )
+        } else {
+            this.dispose();
+        }
     }
 
     private dir: BABYLON.Vector3 = BABYLON.Vector3.Forward();

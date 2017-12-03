@@ -204,6 +204,7 @@ window.addEventListener("DOMContentLoaded", () => {
 		() => {
 			let shipControler = new ShipControler(ship, game.scene);
 			let manager = new AnimalManager(ship, game.scene);
+			manager.loadData();
 			ship.fishnet = new FishNet(ship, manager);
 			ship.fishnet.instantiate(game.scene);
 		}
