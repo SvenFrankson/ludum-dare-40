@@ -74,30 +74,14 @@ window.addEventListener("DOMContentLoaded", () => {
 	game.camera = new ShipCamera("ShipCamera", ship, game.scene);
 
 	ship.instantiate(
-		game.scene
+		game.scene,
+		() => {
+			let shipControler = new ShipControler(ship, game.scene);
+			let manager = new AnimalManager(ship, game.scene);
+			let fishnet = new FishNet(ship, manager);
+			fishnet.instantiate(game.scene);
+		}
 	);
-
-	let shipControler = new ShipControler(ship, game.scene);
-
-	for (let i: number = 0; i < 10; i++) {
-		let t = new Turtle();
-		let p = new BABYLON.Vector3(
-			(Math.random() - 0.5) * 2 * 6,
-			- 2,
-			(Math.random() - 0.5) * 2 * 6
-		);
-		t.instantiate(p, game.scene);
-	}
-
-	for (let i: number = 0; i < 10; i++) {
-		let f = new Fish();
-		let p = new BABYLON.Vector3(
-			(Math.random() - 0.5) * 2 * 6,
-			- 2,
-			(Math.random() - 0.5) * 2 * 6
-		);
-		f.instantiate(p, game.scene);
-	}
 
 	game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", {width: seaSize * 10, height: seaSize * 10}, game.scene);
 	game.groundZero.isVisible = false;

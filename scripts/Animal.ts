@@ -1,9 +1,18 @@
-class Animal {
+abstract class Animal {
 
     public instance: BABYLON.AbstractMesh;
 
-    constructor(public name: string) {
+    constructor(public name: string, public manager: AnimalManager) {
 
+    }
+
+    public abstract catch(fishnet: FishNet): void;
+
+    public dispose(): void {
+        this.manager.removeAnimal(this);
+        if (this.instance) {
+            this.instance.dispose();
+        }
     }
 
     public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
@@ -25,7 +34,7 @@ class Animal {
 
     private dir: BABYLON.Vector3 = BABYLON.Vector3.Forward();
     private targetDir: BABYLON.Vector3 = BABYLON.Vector3.Right();
-    private _update = () => {
+    protected _update = () => {
         this.dir = this.instance.getDirection(BABYLON.Axis.Z);
         let alpha = LDMath.AngleFromToAround(this.dir, this.targetDir, BABYLON.Axis.Y);
         if (Math.abs(alpha) > Math.PI / 64) {
@@ -42,10 +51,20 @@ class Animal {
     }
 }
 
-class Turtle extends Animal {
+class Protected extends Animal {
 
-    constructor() {
-        super("turtle");
+    public catch(fishnet: FishNet): void {
+        Main.instance.scene.unregisterBeforeRender(this._update);
+        this.instance.parent = fishnet.instance;
+        this.instance.position.copyFromFloats(Math.random() * 2 - 2, 0, Math.random() * 2 - 2);
+        this.manager.removeAnimal(this);
+    }
+}
+
+class Turtle extends Protected {
+
+    constructor(manager: AnimalManager) {
+        super("turtle", manager);
     }
 
     public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
@@ -66,10 +85,17 @@ class Turtle extends Animal {
     }
 }
 
-class Fish extends Animal {
+abstract class Fishable extends Animal {
+
+    public catch(fishnet: FishNet): void {
+        this.dispose();
+    }
+}
+
+class Fish extends Fishable {
     
-    constructor() {
-        super("fish");
+    constructor(manager: AnimalManager) {
+        super("fish", manager);
     }
 
     public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {

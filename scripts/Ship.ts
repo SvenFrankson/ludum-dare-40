@@ -19,7 +19,7 @@ class Ship {
             let dir: BABYLON.Vector3 = this.target.subtract(this.instance.position);
             let forward: BABYLON.Vector3 = this.instance.getDirection(BABYLON.Axis.Z);
 
-            let speedInput = BABYLON.Vector3.Distance(this.target, this.instance.position) / 20;
+            let speedInput = BABYLON.Vector3.Dot(dir, forward) / 20;
             speedInput = Math.min(Math.max(speedInput, 0), 1);
             this.velocity.scaleInPlace(0.99);
             if (Main.instance.pointerDown) {
@@ -77,7 +77,6 @@ class Ship {
                 );
                 new ShipTrail(this.instance.position, this.instance, 0.6, scene);
                 new ShipTrail(this.instance.position, this.instance, -0.6, scene);
-                (new FishNet(this)).instantiate(scene);
                 scene.registerBeforeRender(this._update);
                 if (callback) {
                     callback();

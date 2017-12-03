@@ -5,7 +5,7 @@ class FishNet {
     public ropeRight: BABYLON.Mesh;
     public velocity: BABYLON.Vector3 = BABYLON.Vector3.Zero();
 
-    constructor(public ship: Ship) {
+    constructor(public ship: Ship, public manager: AnimalManager) {
 
     }
     
@@ -17,6 +17,9 @@ class FishNet {
             scene,
             (meshes) => {
                 this.instance = meshes[0];
+
+                this.instance.position = this.ship.instance.position.subtract(this.ship.instance.getDirection(BABYLON.Axis.Z).scale(10));
+
                 this.instance.material = new ToonMaterial("ToonMaterial", BABYLON.Color3.Black(), scene);
                 this.instance.renderOutline = true;
                 this.instance.outlineColor = BABYLON.Color3.Black();
@@ -62,7 +65,7 @@ class FishNet {
             dir.normalize();
 
             this.velocity.scaleInPlace(0.99);
-            this.velocity.addInPlace(dir.scale(delta))
+            this.velocity.addInPlace(dir.scale(delta / 2));
             this.instance.position.addInPlace(this.velocity.scale(deltaTime / 1000));
 
             this.instance.lookAt(this.ship.instance.position, Math.PI);
@@ -98,6 +101,15 @@ class FishNet {
                 },
                 this.instance.getScene()
             );
+
+            for (let i: number = 0; i < this.manager.animals.length; i++) {
+                let a = this.manager.animals[i];
+                if (a.instance) {
+                    if (BABYLON.Vector3.DistanceSquared(this.instance.position, a.instance.position) < 4) {
+                        a.catch(this);
+                    }
+                }
+            }
         }
     }
 }
