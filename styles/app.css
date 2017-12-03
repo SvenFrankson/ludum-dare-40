@@ -63,6 +63,18 @@ html, body {
     z-index: 2;
 }
 
+#game-over-menu {
+    position: absolute;
+    font-family: "Raleway";
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+    color: white;
+}
+
 #in-game {
     position: absolute;
     font-family: "Raleway";

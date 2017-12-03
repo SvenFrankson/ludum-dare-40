@@ -57,6 +57,10 @@ class Main {
 			})
 		})
 	}
+
+	public gameOver(): void {
+		
+	}
 }
 
 
