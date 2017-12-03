@@ -687,8 +687,14 @@ class Ship {
                     this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
                     this.container.rotation.z = BABYLON.Vector3.Dot(this.velocity, right) / 20;
                 }
+                BABYLON.Vector3.TransformCoordinatesToRef(this._trailLeftLocalPos, this.instance.getWorldMatrix(), this.trailLeftPos);
+                BABYLON.Vector3.TransformCoordinatesToRef(this._trailRightLocalPos, this.instance.getWorldMatrix(), this.trailRightPos);
             }
         };
+        this._trailLeftLocalPos = new BABYLON.Vector3(-0.6, 0, -3.3);
+        this._trailRightLocalPos = new BABYLON.Vector3(0.6, 0, -3.3);
+        this.trailLeftPos = BABYLON.Vector3.Zero();
+        this.trailRightPos = BABYLON.Vector3.Zero();
         this.sea = sea;
     }
     instantiate(scene, callback) {
@@ -703,8 +709,8 @@ class Ship {
                 m.outlineWidth = 0.01;
                 m.parent = this.container;
             });
-            new ShipTrail(this.instance.position, this.instance, 0.6, scene);
-            new ShipTrail(this.instance.position, this.instance, -0.6, scene);
+            new ShipTrail(this.trailLeftPos, this.instance, -1, scene);
+            new ShipTrail(this.trailRightPos, this.instance, 1, scene);
             scene.registerBeforeRender(this._update);
             if (callback) {
                 callback();

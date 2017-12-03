@@ -59,9 +59,16 @@ class Ship {
                 this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
                 this.container.rotation.z = BABYLON.Vector3.Dot(this.velocity, right) / 20;
             }
+
+            BABYLON.Vector3.TransformCoordinatesToRef(this._trailLeftLocalPos, this.instance.getWorldMatrix(), this.trailLeftPos);
+            BABYLON.Vector3.TransformCoordinatesToRef(this._trailRightLocalPos, this.instance.getWorldMatrix(), this.trailRightPos);
         }
     }
 
+    private _trailLeftLocalPos: BABYLON.Vector3 = new BABYLON.Vector3(-0.6, 0, -3.3);
+    private _trailRightLocalPos: BABYLON.Vector3 = new BABYLON.Vector3(0.6, 0, -3.3);
+    public trailLeftPos: BABYLON.Vector3 = BABYLON.Vector3.Zero();
+    public trailRightPos: BABYLON.Vector3 = BABYLON.Vector3.Zero();
     public instantiate(scene: BABYLON.Scene, callback?: () => void): void {
         BABYLON.SceneLoader.ImportMesh(
             "",
@@ -81,8 +88,8 @@ class Ship {
                         m.parent = this.container;
                     }
                 );
-                new ShipTrail(this.instance.position, this.instance, 0.6, scene);
-                new ShipTrail(this.instance.position, this.instance, -0.6, scene);
+                new ShipTrail(this.trailLeftPos, this.instance, -1, scene);
+                new ShipTrail(this.trailRightPos, this.instance, 1, scene);
                 scene.registerBeforeRender(this._update);
                 if (callback) {
                     callback();
