@@ -67,6 +67,11 @@ class Turtle extends Protected {
     constructor(manager: AnimalManager) {
         super("turtle", manager);
     }
+    
+    public catch(fishnet: FishNet): number {
+        Main.instance.score -= 100;
+        return super.catch(fishnet);
+    }
 
     public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
         super.instantiate(position, scene, () => {
@@ -98,6 +103,11 @@ class Fish extends Fishable {
     
     constructor(manager: AnimalManager) {
         super("fish", manager);
+    }
+
+    public catch(fishnet: FishNet): number {
+        Main.instance.score += 50;
+        return super.catch(fishnet);
     }
 
     public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {

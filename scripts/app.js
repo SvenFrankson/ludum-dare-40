@@ -47,6 +47,10 @@ class Turtle extends Protected {
     constructor(manager) {
         super("turtle", manager);
     }
+    catch(fishnet) {
+        Main.instance.score -= 100;
+        return super.catch(fishnet);
+    }
     instantiate(position, scene, callback) {
         super.instantiate(position, scene, () => {
             let fishMaterial = new BABYLON.StandardMaterial("TurtleMaterial", scene);
@@ -73,6 +77,10 @@ class Fishable extends Animal {
 class Fish extends Fishable {
     constructor(manager) {
         super("fish", manager);
+    }
+    catch(fishnet) {
+        Main.instance.score += 50;
+        return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
         super.instantiate(position, scene, () => {
@@ -261,10 +269,19 @@ class Main {
     constructor(canvasElement) {
         this.playing = false;
         this.pointerDown = false;
+        this._score = 0;
+        this.timer = 0;
         Main.instance = this;
         this.canvas = document.getElementById(canvasElement);
         this.engine = new BABYLON.Engine(this.canvas, true);
         BABYLON.Engine.ShadersRepository = "./shaders/";
+    }
+    get score() {
+        return this._score;
+    }
+    set score(v) {
+        this._score = v;
+        $("#score").text(this.score.toFixed(0));
     }
     createScene() {
         this.scene = new BABYLON.Scene(this.engine);
@@ -277,14 +294,20 @@ class Main {
     animate() {
         this.engine.runRenderLoop(() => {
             this.scene.render();
+            this.timer -= this.engine.getDeltaTime() / 1000;
+            $("#time").text(this.timer.toFixed(0));
         });
     }
     resize() {
         this.engine.resize();
     }
     playButtonClic() {
-        $("#gui").fadeOut(1000, undefined, () => {
-            this.playing = true;
+        $("#gui").fadeOut(600, undefined, () => {
+            $("#in-game").fadeIn(600, undefined, () => {
+                this.score = 0;
+                this.playing = true;
+                this.timer = 60;
+            });
         });
     }
 }

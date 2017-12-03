@@ -9,6 +9,15 @@ class Main {
 	public groundZero: BABYLON.Mesh;
 	public playing: boolean = false;
 	public pointerDown: boolean = false;
+	private _score: number = 0;
+	public get score(): number {
+		return this._score;
+	}
+	public set score(v: number) {
+		this._score = v;
+		$("#score").text(this.score.toFixed(0));
+	}
+	public timer = 0;
 
 	constructor(canvasElement: string) {
 		Main.instance = this;
@@ -30,6 +39,8 @@ class Main {
 	public animate(): void {
 		this.engine.runRenderLoop(() => {
 			this.scene.render();
+			this.timer -= this.engine.getDeltaTime() / 1000;
+			$("#time").text(this.timer.toFixed(0));
 		});
 	}
 
@@ -38,8 +49,12 @@ class Main {
 	}
 
 	public playButtonClic(): void {
-		$("#gui").fadeOut(1000, undefined, () => {
-			this.playing = true;
+		$("#gui").fadeOut(600, undefined, () => {
+			$("#in-game").fadeIn(600, undefined, () => {
+				this.score = 0;
+				this.playing = true;
+				this.timer = 60;
+			})
 		})
 	}
 }

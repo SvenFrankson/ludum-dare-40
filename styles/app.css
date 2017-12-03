@@ -63,6 +63,25 @@ html, body {
     z-index: 2;
 }
 
+#in-game {
+    position: absolute;
+    font-family: "Raleway";
+    width: 100%;
+    height: 5%;
+    margin: 0px;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.in-game-info {
+    font-size: 30px;
+    color: white;
+    margin-top: 1%;
+    margin-left: 5%;
+}
+
 .debug-panel {
     font-size: 16px;
     color: white;
