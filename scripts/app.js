@@ -295,6 +295,9 @@ class Main {
         this.engine.runRenderLoop(() => {
             this.scene.render();
             this.timer -= this.engine.getDeltaTime() / 1000;
+            if (this.playing && this.timer < 0) {
+                this.gameOver();
+            }
             $("#time").text(this.timer.toFixed(0));
         });
     }
@@ -303,10 +306,17 @@ class Main {
     }
     playButtonClic() {
         $("#gui").fadeOut(600, undefined, () => {
-            $("#in-game").fadeIn(600, undefined, () => {
-                this.score = 0;
-                this.playing = true;
-                this.timer = 60;
+            this.score = 0;
+            this.playing = true;
+            this.timer = 3;
+            $("#in-game").fadeIn(300, undefined, () => {
+            });
+        });
+    }
+    gameOver() {
+        $("#in-game").fadeOut(600, undefined, () => {
+            $("#game-over-menu").fadeIn(600, undefined, () => {
+                this.playing = false;
             });
         });
     }
@@ -317,6 +327,12 @@ window.addEventListener("DOMContentLoaded", () => {
     game.animate();
     $("#play-button").on("click", () => {
         game.playButtonClic();
+    });
+    $("#replay-button").on("click", () => {
+        location.reload();
+    });
+    $("#share-button").on("click", () => {
+        location.reload();
     });
     game.canvas.addEventListener("pointerdown", () => {
         game.pointerDown = true;
