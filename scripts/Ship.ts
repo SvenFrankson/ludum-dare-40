@@ -43,7 +43,7 @@ class Ship {
             );
             */
             if (isFinite(alpha)) {
-                this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 16 * deltaTime / 1000));
+                this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
                 this.container.rotation.x = -Math.PI / 16 * this.speed / 10;
                 this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
             }
@@ -62,7 +62,7 @@ class Ship {
                 this.container.parent = this.instance;
                 meshes.forEach(
                     (m) => {
-                        m.material = new ToonMaterial("ToonMaterial", scene);
+                        m.material = new ToonMaterial("ToonMaterial", BABYLON.Color3.Black(), scene);
                         m.renderOutline = true;
                         m.outlineColor = BABYLON.Color3.Black();
                         m.outlineWidth = 0.01;

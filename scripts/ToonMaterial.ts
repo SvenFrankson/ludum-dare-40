@@ -1,6 +1,6 @@
 class ToonMaterial extends BABYLON.ShaderMaterial {
 
-    constructor(name: string, scene: BABYLON.Scene) {
+    constructor(name: string, color: BABYLON.Color3, scene: BABYLON.Scene) {
         super(
             name,
             scene,
@@ -14,6 +14,7 @@ class ToonMaterial extends BABYLON.ShaderMaterial {
             }
         );
         scene.registerBeforeRender(this._updateCameraPosition);
+        this.setColor3("color", color);
     }
 
     private _updateCameraPosition = () => {

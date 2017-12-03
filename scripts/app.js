@@ -1,3 +1,18 @@
+class Animal {
+    constructor(name) {
+        this.name = name;
+    }
+    instantiate(position, scene) {
+        BABYLON.SceneLoader.ImportMesh("", "./data/" + this.name + ".babylon", "", scene, (meshes) => {
+            this.instance = meshes[0];
+            this.instance.position = position;
+            this.instance.material = new ToonMaterial("ToonMaterial", BABYLON.Color3.Black(), scene);
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.03;
+        });
+    }
+}
 class Main {
     constructor(canvasElement) {
         Main.instance = this;
@@ -33,6 +48,11 @@ window.addEventListener("DOMContentLoaded", () => {
     game.camera = new ShipCamera("ShipCamera", ship, game.scene);
     ship.instantiate(game.scene);
     let shipControler = new ShipControler(ship, game.scene);
+    for (let i = 0; i < 10; i++) {
+        let t = new Animal("turtle");
+        let p = new BABYLON.Vector3((Math.random() - 0.5) * 2 * 42, -2, (Math.random() - 0.5) * 2 * 42);
+        t.instantiate(p, game.scene);
+    }
     game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", { width: seaSize * 10, height: seaSize * 10 }, game.scene);
     game.groundZero.isVisible = false;
 });
@@ -206,7 +226,7 @@ class Ship {
                 );
                 */
                 if (isFinite(alpha)) {
-                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 16 * deltaTime / 1000));
+                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
                     this.container.rotation.x = -Math.PI / 16 * this.speed / 10;
                     this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
                 }
@@ -220,7 +240,7 @@ class Ship {
             this.container = new BABYLON.Mesh("Container", scene);
             this.container.parent = this.instance;
             meshes.forEach((m) => {
-                m.material = new ToonMaterial("ToonMaterial", scene);
+                m.material = new ToonMaterial("ToonMaterial", BABYLON.Color3.Black(), scene);
                 m.renderOutline = true;
                 m.outlineColor = BABYLON.Color3.Black();
                 m.outlineWidth = 0.01;
@@ -272,7 +292,7 @@ class ShipControler {
     }
 }
 class ToonMaterial extends BABYLON.ShaderMaterial {
-    constructor(name, scene) {
+    constructor(name, color, scene) {
         super(name, scene, {
             vertex: "toon",
             fragment: "toon",
@@ -287,6 +307,7 @@ class ToonMaterial extends BABYLON.ShaderMaterial {
             }
         };
         scene.registerBeforeRender(this._updateCameraPosition);
+        this.setColor3("color", color);
     }
 }
 class Wave {
