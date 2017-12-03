@@ -7,6 +7,8 @@ class Main {
 	public light: BABYLON.HemisphericLight;
 	public camera: ShipCamera;
 	public groundZero: BABYLON.Mesh;
+	public playing: boolean = false;
+	public pointerDown: boolean = false;
 
 	constructor(canvasElement: string) {
 		Main.instance = this;
@@ -34,6 +36,12 @@ class Main {
 	public resize(): void {
 		this.engine.resize();
 	}
+
+	public playButtonClic(): void {
+		$("#gui").fadeOut(1000, undefined, () => {
+			this.playing = true;
+		})
+	}
 }
 
 
@@ -41,6 +49,22 @@ window.addEventListener("DOMContentLoaded", () => {
 	let game: Main = new Main("render-canvas");
 	game.createScene();
 	game.animate();
+
+	$("#play-button").on("click", () => {
+		game.playButtonClic();
+	});
+
+	game.canvas.addEventListener("pointerdown", () => {
+		game.pointerDown = true;
+	})
+
+	game.canvas.addEventListener("pointerout", () => {
+		game.pointerDown = false;
+	})
+
+	document.addEventListener("pointerup", () => {
+		game.pointerDown = false;
+	})
 	
 	let seaSize = 64;
 	let sea = new Sea(seaSize);

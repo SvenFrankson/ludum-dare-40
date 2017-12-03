@@ -14,7 +14,7 @@ class Ship {
     public debugDir: BABYLON.RayHelper;
     public debugZ: BABYLON.RayHelper;
     private _update = () => {
-        if (this.instance) {
+        if (this.instance && Main.instance.playing) {
             let deltaTime: number = this.instance.getScene().getEngine().getDeltaTime();
             let dir: BABYLON.Vector3 = this.target.subtract(this.instance.position);
             let forward: BABYLON.Vector3 = this.instance.getDirection(BABYLON.Axis.Z);
@@ -22,7 +22,9 @@ class Ship {
             let speedInput = BABYLON.Vector3.Distance(this.target, this.instance.position) / 20;
             speedInput = Math.min(Math.max(speedInput, 0), 1);
             this.velocity.scaleInPlace(0.99);
-            this.velocity.addInPlace(forward.scale(speedInput / 5));
+            if (Main.instance.pointerDown) {
+                this.velocity.addInPlace(forward.scale(speedInput / 5));
+            }
 
             this.instance.position.x += this.velocity.x * deltaTime / 1000;
             this.instance.position.z += this.velocity.z * deltaTime / 1000;
@@ -45,7 +47,9 @@ class Ship {
             );
             */
             if (isFinite(alpha)) {
-                this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
+                if (Main.instance.pointerDown) {
+                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
+                }
                 this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
                 this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
             }

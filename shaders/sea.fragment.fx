@@ -83,7 +83,7 @@ void main(void) {
     vec4 color = vec4(0., 0., 0., 0.);
 
     if (abs(c0 + h0) < 0.03) {
-        color = vec4(1., 1., 1., 1.);
+        color = vec4(0.75, 0.75, 0.75, 1.);
     } else if (abs(c1 + h1) < 0.03) {
         color = vec4(0.5, 0.5, 0.5, 1.);
     }

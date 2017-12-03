@@ -72,13 +72,40 @@ class Fish extends Animal {
 class FishNet {
     constructor(ship) {
         this.ship = ship;
+        this.velocity = BABYLON.Vector3.Zero();
         this._updateFishNet = () => {
             if (this.ship && this.instance) {
+                let deltaTime = this.instance.getScene().getEngine().getDeltaTime();
                 this.instance.position.y = this.ship.instance.position.y;
                 let dir = this.ship.instance.position.subtract(this.instance.position);
+                let delta = (dir.length() - 10) / 10;
+                delta = Math.min(Math.max(delta, -1), 1);
                 dir.normalize();
-                this.instance.position = this.ship.instance.position.subtract(dir.scale(10));
+                this.velocity.scaleInPlace(0.99);
+                this.velocity.addInPlace(dir.scale(delta));
+                this.instance.position.addInPlace(this.velocity.scale(deltaTime / 1000));
                 this.instance.lookAt(this.ship.instance.position, Math.PI);
+                let ropeLeftStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(-3.37, 0, 0.62), this.instance.getWorldMatrix());
+                let ropeRightStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(3.37, 0, 0.62), this.instance.getWorldMatrix());
+                let ropeShipEnd = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 2.66, -3.6), this.ship.container.getWorldMatrix());
+                BABYLON.MeshBuilder.CreateTube("RopeLeft", {
+                    path: [
+                        ropeLeftStart,
+                        ropeShipEnd
+                    ],
+                    radius: 0.05,
+                    updatable: true,
+                    instance: this.ropeLeft,
+                }, this.instance.getScene());
+                BABYLON.MeshBuilder.CreateTube("RopeRight", {
+                    path: [
+                        ropeRightStart,
+                        ropeShipEnd
+                    ],
+                    radius: 0.05,
+                    updatable: true,
+                    instance: this.ropeRight,
+                }, this.instance.getScene());
             }
         };
     }
@@ -89,12 +116,30 @@ class FishNet {
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.01;
+            this.ropeLeft = BABYLON.MeshBuilder.CreateTube("RopeLeft", {
+                path: [
+                    BABYLON.Vector3.Zero(),
+                    BABYLON.Vector3.One()
+                ],
+                radius: 0.05,
+                updatable: true
+            }, scene);
+            this.ropeRight = BABYLON.MeshBuilder.CreateTube("RopeRight", {
+                path: [
+                    BABYLON.Vector3.Zero(),
+                    BABYLON.Vector3.One()
+                ],
+                radius: 0.05,
+                updatable: true
+            }, scene);
             scene.registerBeforeRender(this._updateFishNet);
         });
     }
 }
 class Main {
     constructor(canvasElement) {
+        this.playing = false;
+        this.pointerDown = false;
         Main.instance = this;
         this.canvas = document.getElementById(canvasElement);
         this.engine = new BABYLON.Engine(this.canvas, true);
@@ -116,11 +161,28 @@ class Main {
     resize() {
         this.engine.resize();
     }
+    playButtonClic() {
+        $("#gui").fadeOut(1000, undefined, () => {
+            this.playing = true;
+        });
+    }
 }
 window.addEventListener("DOMContentLoaded", () => {
     let game = new Main("render-canvas");
     game.createScene();
     game.animate();
+    $("#play-button").on("click", () => {
+        game.playButtonClic();
+    });
+    game.canvas.addEventListener("pointerdown", () => {
+        game.pointerDown = true;
+    });
+    game.canvas.addEventListener("pointerout", () => {
+        game.pointerDown = false;
+    });
+    document.addEventListener("pointerup", () => {
+        game.pointerDown = false;
+    });
     let seaSize = 64;
     let sea = new Sea(seaSize);
     sea.instantiate(game.scene);
@@ -204,7 +266,7 @@ class Sea {
         let bottom = BABYLON.MeshBuilder.CreateGround("Sea", { width: 2048, height: 2048, subdivisions: 1 }, scene);
         bottom.position.y = -5;
         let bottomMaterial = new BABYLON.StandardMaterial("BottomMaterial", scene);
-        bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#7ee5f7");
+        bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
         bottomMaterial.specularColor.copyFromFloats(0, 0, 0);
         bottom.material = bottomMaterial;
     }
@@ -284,14 +346,16 @@ class Ship {
         this.target = BABYLON.Vector3.Zero();
         this.velocity = BABYLON.Vector3.Zero();
         this._update = () => {
-            if (this.instance) {
+            if (this.instance && Main.instance.playing) {
                 let deltaTime = this.instance.getScene().getEngine().getDeltaTime();
                 let dir = this.target.subtract(this.instance.position);
                 let forward = this.instance.getDirection(BABYLON.Axis.Z);
                 let speedInput = BABYLON.Vector3.Distance(this.target, this.instance.position) / 20;
                 speedInput = Math.min(Math.max(speedInput, 0), 1);
                 this.velocity.scaleInPlace(0.99);
-                this.velocity.addInPlace(forward.scale(speedInput / 5));
+                if (Main.instance.pointerDown) {
+                    this.velocity.addInPlace(forward.scale(speedInput / 5));
+                }
                 this.instance.position.x += this.velocity.x * deltaTime / 1000;
                 this.instance.position.z += this.velocity.z * deltaTime / 1000;
                 this.instance.position.y = -0.5;
@@ -312,7 +376,9 @@ class Ship {
                 );
                 */
                 if (isFinite(alpha)) {
-                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
+                    if (Main.instance.pointerDown) {
+                        this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
+                    }
                     this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
                     this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
                 }
@@ -346,12 +412,21 @@ class ShipCamera extends BABYLON.FreeCamera {
     constructor(name, ship, scene) {
         super(name, BABYLON.Vector3.Zero(), scene);
         this.smoothness = 30;
+        this.k = 0;
         this._update = () => {
             if (this.ship && this.ship.instance) {
+                this.k++;
                 let targetPos = this.ship.instance.position.clone();
                 let cameraPos = this.ship.instance.getDirection(BABYLON.Axis.Z);
                 cameraPos.y = 0;
                 cameraPos.scaleInPlace(-20);
+                if (!Main.instance.playing) {
+                    targetPos.y = 6;
+                    let x = Math.cos(Math.PI * this.k / 1200) * cameraPos.x - Math.sin(Math.PI * this.k / 1200) * cameraPos.z;
+                    let z = Math.sin(Math.PI * this.k / 1200) * cameraPos.x + Math.cos(Math.PI * this.k / 1200) * cameraPos.z;
+                    cameraPos.x = x;
+                    cameraPos.z = z;
+                }
                 cameraPos.addInPlace(new BABYLON.Vector3(0, 20, 0));
                 cameraPos.x += this.ship.instance.position.x;
                 cameraPos.z += this.ship.instance.position.z;

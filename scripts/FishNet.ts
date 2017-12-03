@@ -1,6 +1,9 @@
 class FishNet {
 
     public instance: BABYLON.AbstractMesh;
+    public ropeLeft: BABYLON.Mesh;
+    public ropeRight: BABYLON.Mesh;
+    public velocity: BABYLON.Vector3 = BABYLON.Vector3.Zero();
 
     constructor(public ship: Ship) {
 
@@ -18,6 +21,32 @@ class FishNet {
                 this.instance.renderOutline = true;
                 this.instance.outlineColor = BABYLON.Color3.Black();
                 this.instance.outlineWidth = 0.01;
+
+                this.ropeLeft = BABYLON.MeshBuilder.CreateTube(
+                    "RopeLeft",
+                    {
+                        path: [
+                            BABYLON.Vector3.Zero(),
+                            BABYLON.Vector3.One()
+                        ],
+                        radius: 0.05,
+                        updatable: true
+                    },
+                    scene
+                );
+                this.ropeRight = BABYLON.MeshBuilder.CreateTube(
+                    "RopeRight",
+                    {
+                        path: [
+                            BABYLON.Vector3.Zero(),
+                            BABYLON.Vector3.One()
+                        ],
+                        radius: 0.05,
+                        updatable: true
+                    },
+                    scene
+                );
+
                 scene.registerBeforeRender(this._updateFishNet);
             }
         )
@@ -25,11 +54,50 @@ class FishNet {
 
     private _updateFishNet = () => {
         if (this.ship && this.instance) {
+            let deltaTime: number = this.instance.getScene().getEngine().getDeltaTime();
             this.instance.position.y = this.ship.instance.position.y;
             let dir = this.ship.instance.position.subtract(this.instance.position);
+            let delta = (dir.length() - 10) / 10;
+            delta = Math.min(Math.max(delta, -1), 1);
             dir.normalize();
-            this.instance.position = this.ship.instance.position.subtract(dir.scale(10));
+
+            this.velocity.scaleInPlace(0.99);
+            this.velocity.addInPlace(dir.scale(delta))
+            this.instance.position.addInPlace(this.velocity.scale(deltaTime / 1000));
+
             this.instance.lookAt(this.ship.instance.position, Math.PI);
+
+            let ropeLeftStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(-3.37, 0, 0.62), this.instance.getWorldMatrix());
+            let ropeRightStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(3.37, 0, 0.62), this.instance.getWorldMatrix());
+            let ropeShipEnd = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 2.66, -3.6), this.ship.container.getWorldMatrix());
+
+            BABYLON.MeshBuilder.CreateTube(
+                "RopeLeft",
+                {
+                    path: [
+                        ropeLeftStart,
+                        ropeShipEnd
+                    ],
+                    radius: 0.05,
+                    updatable: true,
+                    instance: this.ropeLeft,
+                },
+                this.instance.getScene()
+            );
+
+            BABYLON.MeshBuilder.CreateTube(
+                "RopeRight",
+                {
+                    path: [
+                        ropeRightStart,
+                        ropeShipEnd
+                    ],
+                    radius: 0.05,
+                    updatable: true,
+                    instance: this.ropeRight,
+                },
+                this.instance.getScene()
+            );
         }
     }
 }

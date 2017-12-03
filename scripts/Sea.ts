@@ -32,7 +32,7 @@ class Sea {
         let bottom = BABYLON.MeshBuilder.CreateGround("Sea", {width: 2048, height: 2048, subdivisions: 1}, scene);
         bottom.position.y = -5;
         let bottomMaterial = new BABYLON.StandardMaterial("BottomMaterial", scene);
-        bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#7ee5f7");
+        bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
         bottomMaterial.specularColor.copyFromFloats(0, 0, 0);
         bottom.material = bottomMaterial;
     }

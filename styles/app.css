@@ -6,32 +6,6 @@ html, body {
     padding: 0;
 }
 
-.title {
-    font-family: 'Raleway', Arial, Helvetica, sans-serif;
-    font-weight: Lighter;
-    font-size: 80px;
-    color: white;
-    border-bottom: 1px solid;
-    border-color: white;
-}
-
-.subtitle {
-    font-family: 'Raleway', Arial, Helvetica, sans-serif;
-    font-weight: Lighter;
-    font-size: 26px;
-    color: rgb(240, 240, 240);
-    text-align: right;
-    margin-bottom: 5%;
-}
-
-.mediumtitle {
-    font-family: 'Raleway', Arial, Helvetica, sans-serif;
-    font-weight: Lighter;
-    font-size: 40px;
-    color: white;
-    margin-bottom: 5%;
-}
-
 #render-canvas {
     display: block;
     width: 100%;
@@ -41,12 +15,39 @@ html, body {
     z-index: 1;
 }
 
-#main-page {
+#gui {
     position: absolute;
+    font-family: "Raleway";
     width: 100%;
     height: 100%;
     margin: 0px;
     top: 0px;
     left: 0px;
     z-index: 2;
+}
+
+#main-title {
+    margin-top: 10%;
+    font-size: 80px;
+    color: white;
+    text-align: center;
+}
+
+#credit {
+    margin-top: 2%;
+    font-size: 24px;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+#play-button {
+    margin-top: 7%;
+    font-size: 90px;
+    color: white;
+    text-align: center;
+    border-bottom: 3px solid white;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
 }
