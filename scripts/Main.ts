@@ -56,7 +56,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	let shipControler = new ShipControler(ship, game.scene);
 
 	for (let i: number = 0; i < 10; i++) {
-		let t = new Animal("turtle");
+		let t = new Turtle();
 		let p = new BABYLON.Vector3(
 			(Math.random() - 0.5) * 2 * 6,
 			- 2,
@@ -66,13 +66,13 @@ window.addEventListener("DOMContentLoaded", () => {
 	}
 
 	for (let i: number = 0; i < 10; i++) {
-		let t = new Animal("fish");
+		let f = new Fish();
 		let p = new BABYLON.Vector3(
 			(Math.random() - 0.5) * 2 * 6,
 			- 2,
 			(Math.random() - 0.5) * 2 * 6
 		);
-		t.instantiate(p, game.scene);
+		f.instantiate(p, game.scene);
 	}
 
 	game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", {width: seaSize * 10, height: seaSize * 10}, game.scene);

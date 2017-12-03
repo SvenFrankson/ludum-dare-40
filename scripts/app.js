@@ -16,19 +16,56 @@ class Animal {
             }
         };
     }
-    instantiate(position, scene) {
+    instantiate(position, scene, callback) {
         BABYLON.SceneLoader.ImportMesh("", "./data/" + this.name + ".babylon", "", scene, (meshes) => {
             this.instance = meshes[0];
             this.instance.position = position;
-            this.instance.material = new BABYLON.StandardMaterial("Test", scene);
-            this.instance.material.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
-            this.instance.material.specularColor.copyFromFloats(0, 0, 0);
-            this.instance.material.emissiveColor.copyFromFloats(0.2, 0.2, 0.2);
+            scene.registerBeforeRender(this._update);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+}
+class Turtle extends Animal {
+    constructor() {
+        super("turtle");
+    }
+    instantiate(position, scene, callback) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("TurtleMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            this.instance.material = fishMaterial;
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("ArmatureAction", true);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+}
+class Fish extends Animal {
+    constructor() {
+        super("fish");
+    }
+    instantiate(position, scene, callback) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            this.instance.material = fishMaterial;
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
             this.instance.skeleton.beginAnimation("FishArmatureAction", true);
-            scene.registerBeforeRender(this._update);
+            if (callback) {
+                callback();
+            }
         });
     }
 }
@@ -68,14 +105,14 @@ window.addEventListener("DOMContentLoaded", () => {
     ship.instantiate(game.scene);
     let shipControler = new ShipControler(ship, game.scene);
     for (let i = 0; i < 10; i++) {
-        let t = new Animal("turtle");
+        let t = new Turtle();
         let p = new BABYLON.Vector3((Math.random() - 0.5) * 2 * 6, -2, (Math.random() - 0.5) * 2 * 6);
         t.instantiate(p, game.scene);
     }
     for (let i = 0; i < 10; i++) {
-        let t = new Animal("fish");
+        let f = new Fish();
         let p = new BABYLON.Vector3((Math.random() - 0.5) * 2 * 6, -2, (Math.random() - 0.5) * 2 * 6);
-        t.instantiate(p, game.scene);
+        f.instantiate(p, game.scene);
     }
     game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", { width: seaSize * 10, height: seaSize * 10 }, game.scene);
     game.groundZero.isVisible = false;
@@ -270,6 +307,8 @@ class Ship {
                 m.outlineWidth = 0.01;
                 m.parent = this.container;
             });
+            new ShipTrail(this.instance.position, this.instance, 0.6, scene);
+            new ShipTrail(this.instance.position, this.instance, -0.6, scene);
             scene.registerBeforeRender(this._update);
             if (callback) {
                 callback();
@@ -284,11 +323,11 @@ class ShipCamera extends BABYLON.FreeCamera {
         this._update = () => {
             if (this.ship && this.ship.instance) {
                 let targetPos = this.ship.instance.position.clone();
-                targetPos.y = 5;
+                targetPos.y = 3;
                 let cameraPos = this.ship.instance.getDirection(BABYLON.Axis.Z);
                 cameraPos.y = 0;
-                cameraPos.scaleInPlace(-30);
-                cameraPos.addInPlace(new BABYLON.Vector3(0, 30, 0));
+                cameraPos.scaleInPlace(-20);
+                cameraPos.addInPlace(new BABYLON.Vector3(0, 20, 0));
                 cameraPos.x += this.ship.instance.position.x;
                 cameraPos.z += this.ship.instance.position.z;
                 this.position = BABYLON.Vector3.Lerp(this.position, cameraPos, 1 / this.smoothness);
@@ -313,6 +352,62 @@ class ShipControler {
         this.ship = ship;
         this.scene = scene;
         this.scene.registerBeforeRender(this._checkInputs);
+    }
+}
+class ShipTrail extends BABYLON.Mesh {
+    constructor(origin, target, normalLength, scene) {
+        super("ShipTrail", scene);
+        this.origin = origin;
+        this.target = target;
+        this.normalLength = normalLength;
+        this.length = 300;
+        this.points = [];
+        this.normals = [];
+        this._updateTrail = () => {
+            this.points.push(this.origin.clone());
+            this.points.splice(0, 1);
+            this.normals.push(this.target.getDirection(BABYLON.Axis.X).scaleInPlace(0.2));
+            this.normals.splice(0, 1);
+            let positions = [];
+            for (let i = 0; i < this.points.length; i++) {
+                this.points[i].x += this.normalLength * this.normals[i].x / 3;
+                this.points[i].y += this.normalLength * this.normals[i].y / 3;
+                this.points[i].z += this.normalLength * this.normals[i].z / 3;
+                positions.push(this.points[i].x + this.normals[i].x * i / this.length, this.points[i].y + this.normals[i].y * i / this.length, this.points[i].z + this.normals[i].z * i / this.length);
+                positions.push(this.points[i].x - this.normals[i].x * i / this.length, this.points[i].y - this.normals[i].y * i / this.length, this.points[i].z - this.normals[i].z * i / this.length);
+            }
+            console.log(positions.length);
+            this.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions, false);
+            this.computeWorldMatrix(true);
+            this.refreshBoundingInfo();
+        };
+        this.position.y = 0.1;
+        this.points = [];
+        this.normals = [];
+        for (let i = 0; i < this.length; i++) {
+            this.points.push(origin.clone());
+            this.normals.push(target.getDirection(BABYLON.Axis.X).scaleInPlace(normalLength));
+        }
+        this.initialize();
+        scene.registerBeforeRender(this._updateTrail);
+    }
+    initialize() {
+        let positions = [];
+        let indices = [];
+        let data = new BABYLON.VertexData();
+        for (let i = 0; i < this.points.length; i++) {
+            positions.push(this.points[i].x, this.points[i].y, this.points[i].z);
+            positions.push(this.points[i].x, this.points[i].y, this.points[i].z);
+        }
+        for (let i = 0; i < this.points.length - 1; i++) {
+            indices.push(2 * i, 2 * i + 1, 2 * i + 3);
+            indices.push(2 * i, 2 * i + 3, 2 * i + 2);
+            indices.push(2 * i, 2 * i + 3, 2 * i + 1);
+            indices.push(2 * i, 2 * i + 2, 2 * i + 3);
+        }
+        data.positions = positions;
+        data.indices = indices;
+        data.applyToMesh(this, true);
     }
 }
 class ToonMaterial extends BABYLON.ShaderMaterial {

@@ -69,6 +69,8 @@ class Ship {
                         m.parent = this.container;
                     }
                 );
+                new ShipTrail(this.instance.position, this.instance, 0.6, scene);
+                new ShipTrail(this.instance.position, this.instance, -0.6, scene);
                 scene.registerBeforeRender(this._update);
                 if (callback) {
                     callback();

@@ -6,7 +6,7 @@ class Animal {
 
     }
 
-    public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene) {
+    public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
         BABYLON.SceneLoader.ImportMesh(
             "",
             "./data/" + this.name + ".babylon",
@@ -15,16 +15,10 @@ class Animal {
             (meshes) => {
                 this.instance = meshes[0];
                 this.instance.position = position;
-                this.instance.material = new BABYLON.StandardMaterial("Test", scene);
-                this.instance.material.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
-                this.instance.material.specularColor.copyFromFloats(0, 0, 0);
-                this.instance.material.emissiveColor.copyFromFloats(0.2, 0.2, 0.2);
-                this.instance.renderOutline = true;
-                this.instance.outlineColor = BABYLON.Color3.Black();
-                this.instance.outlineWidth = 0.04;
-                this.instance.skeleton.beginAnimation("FishArmatureAction", true);
-
                 scene.registerBeforeRender(this._update);
+                if (callback) {
+                    callback();
+                }
             }
         )
     }
@@ -45,5 +39,53 @@ class Animal {
                 Math.random() - 0.5
             ).normalize();
         }
+    }
+}
+
+class Turtle extends Animal {
+
+    constructor() {
+        super("turtle");
+    }
+
+    public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("TurtleMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            this.instance.material = fishMaterial;
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("ArmatureAction", true);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+}
+
+class Fish extends Animal {
+    
+    constructor() {
+        super("fish");
+    }
+
+    public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.4, 0.4, 0.4);
+            this.instance.material = fishMaterial;
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("FishArmatureAction", true);
+            if (callback) {
+                callback();
+            }
+        });
     }
 }
