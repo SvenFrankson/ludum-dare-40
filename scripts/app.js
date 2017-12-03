@@ -61,7 +61,32 @@ class Turtle extends Protected {
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
-            this.instance.skeleton.beginAnimation("ArmatureAction", true);
+            this.instance.skeleton.beginAnimation("TurtleArmatureAction", true);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+}
+class Tuna extends Protected {
+    constructor(manager) {
+        super("tuna", manager);
+    }
+    catch(fishnet) {
+        Main.instance.score -= 50;
+        return super.catch(fishnet);
+    }
+    instantiate(position, scene, callback) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("TunaMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+            this.instance.material = fishMaterial;
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("TunaArmatureAction", true);
             if (callback) {
                 callback();
             }
@@ -93,6 +118,31 @@ class Fish extends Fishable {
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
             this.instance.skeleton.beginAnimation("FishArmatureAction", true);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+}
+class Cod extends Fishable {
+    constructor(manager) {
+        super("cod", manager);
+    }
+    catch(fishnet) {
+        Main.instance.score += 50;
+        return super.catch(fishnet);
+    }
+    instantiate(position, scene, callback) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+            this.instance.material = fishMaterial;
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("CodArmatureAction", true);
             if (callback) {
                 callback();
             }
@@ -175,13 +225,27 @@ class AnimalManager {
         }
     }
     _createProtected() {
-        let t = new Turtle(this);
+        let pr;
+        let r = Math.random();
+        if (r < 0.5) {
+            pr = new Turtle(this);
+        }
+        else {
+            pr = new Tuna(this);
+        }
         let p = new BABYLON.Vector3(this.ship.instance.position.x + (Math.random() - 0.5) * 2 * this.maxDistance, -2, this.ship.instance.position.z + (Math.random() - 0.5) * 2 * this.maxDistance);
-        t.instantiate(p, this.scene);
-        return t;
+        pr.instantiate(p, this.scene);
+        return pr;
     }
     _createFishable() {
-        let f = new Fish(this);
+        let f;
+        let r = Math.random();
+        if (r < 0.5) {
+            f = new Fish(this);
+        }
+        else {
+            f = new Cod(this);
+        }
         let p = new BABYLON.Vector3(this.ship.instance.position.x + (Math.random() - 0.5) * 2 * this.maxDistance, -2, this.ship.instance.position.z + (Math.random() - 0.5) * 2 * this.maxDistance);
         f.instantiate(p, this.scene);
         return f;
@@ -308,7 +372,7 @@ class Main {
         $("#gui").fadeOut(600, undefined, () => {
             this.score = 0;
             this.playing = true;
-            this.timer = 3;
+            this.timer = 60;
             $("#in-game").fadeIn(300, undefined, () => {
             });
         });

@@ -83,7 +83,36 @@ class Turtle extends Protected {
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
-            this.instance.skeleton.beginAnimation("ArmatureAction", true);
+            this.instance.skeleton.beginAnimation("TurtleArmatureAction", true);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+}
+
+class Tuna extends Protected {
+
+    constructor(manager: AnimalManager) {
+        super("tuna", manager);
+    }
+    
+    public catch(fishnet: FishNet): number {
+        Main.instance.score -= 50;
+        return super.catch(fishnet);
+    }
+
+    public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("TunaMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+            this.instance.material = fishMaterial;
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("TunaArmatureAction", true);
             if (callback) {
                 callback();
             }
@@ -121,6 +150,34 @@ class Fish extends Fishable {
             this.instance.outlineColor = BABYLON.Color3.Black();
             this.instance.outlineWidth = 0.04;
             this.instance.skeleton.beginAnimation("FishArmatureAction", true);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+}
+
+class Cod extends Fishable {
+    constructor(manager: AnimalManager) {
+        super("cod", manager);
+    }
+    
+    public catch(fishnet: FishNet): number {
+        Main.instance.score += 50;
+        return super.catch(fishnet);
+    }
+    
+    public instantiate(position: BABYLON.Vector3, scene: BABYLON.Scene, callback?: () => void) {
+        super.instantiate(position, scene, () => {
+            let fishMaterial = new BABYLON.StandardMaterial("FishMaterial", scene);
+            fishMaterial.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            fishMaterial.specularColor.copyFromFloats(0, 0, 0);
+            fishMaterial.emissiveColor.copyFromFloats(0.5, 0.5, 0.5);
+            this.instance.material = fishMaterial;
+            this.instance.renderOutline = true;
+            this.instance.outlineColor = BABYLON.Color3.Black();
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("CodArmatureAction", true);
             if (callback) {
                 callback();
             }

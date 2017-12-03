@@ -55,7 +55,7 @@ class Main {
 		$("#gui").fadeOut(600, undefined, () => {
 			this.score = 0;
 			this.playing = true;
-			this.timer = 3;
+			this.timer = 60;
 			$("#in-game").fadeIn(300, undefined, () => {
 
 			})

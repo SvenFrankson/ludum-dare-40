@@ -81,18 +81,30 @@ class AnimalManager {
     }
 
     private _createProtected(): Protected {
-        let t = new Turtle(this);
+        let pr: Protected;
+        let r = Math.random();
+        if (r < 0.5) {
+            pr = new Turtle(this);
+        } else {
+            pr = new Tuna(this);
+        }
 		let p = new BABYLON.Vector3(
 			this.ship.instance.position.x + (Math.random() - 0.5) * 2 * this.maxDistance,
 			- 2,
 			this.ship.instance.position.z + (Math.random() - 0.5) * 2 * this.maxDistance
 		);
-        t.instantiate(p, this.scene);
-        return t;
+        pr.instantiate(p, this.scene);
+        return pr;
     }
     
     private _createFishable(): Fishable {
-        let f = new Fish(this);
+        let f: Fishable;
+        let r = Math.random();
+        if (r < 0.5) {
+            f = new Fish(this);
+        } else {
+            f = new Cod(this);
+        }
 		let p = new BABYLON.Vector3(
 			this.ship.instance.position.x + (Math.random() - 0.5) * 2 * this.maxDistance,
 			- 2,
