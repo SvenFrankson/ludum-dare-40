@@ -4,6 +4,7 @@ class Ship {
     public container: BABYLON.AbstractMesh;
     public sea: Sea;
     public target: BABYLON.Vector3 = BABYLON.Vector3.Zero();
+    public fishnet: FishNet;
 
     public velocity: BABYLON.Vector3 = BABYLON.Vector3.Zero();
 
@@ -18,10 +19,15 @@ class Ship {
             let deltaTime: number = this.instance.getScene().getEngine().getDeltaTime();
             let dir: BABYLON.Vector3 = this.target.subtract(this.instance.position);
             let forward: BABYLON.Vector3 = this.instance.getDirection(BABYLON.Axis.Z);
+            let right: BABYLON.Vector3 = this.instance.getDirection(BABYLON.Axis.X);
 
             let speedInput = BABYLON.Vector3.Dot(dir, forward) / 20;
             speedInput = Math.min(Math.max(speedInput, 0), 1);
-            this.velocity.scaleInPlace(0.99);
+            let drag = 0.99;
+            if (this.fishnet) {
+                drag = Math.pow(drag, this.fishnet.protectedCaught + 1);
+            }
+            this.velocity.scaleInPlace(drag);
             if (Main.instance.pointerDown) {
                 this.velocity.addInPlace(forward.scale(speedInput / 5));
             }
@@ -48,10 +54,10 @@ class Ship {
             */
             if (isFinite(alpha)) {
                 if (Main.instance.pointerDown) {
-                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
+                    this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 2 * deltaTime / 1000));
                 }
                 this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
-                this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
+                this.container.rotation.z = BABYLON.Vector3.Dot(this.velocity, right) / 20;
             }
         }
     }

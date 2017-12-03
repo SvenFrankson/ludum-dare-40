@@ -78,8 +78,8 @@ window.addEventListener("DOMContentLoaded", () => {
 		() => {
 			let shipControler = new ShipControler(ship, game.scene);
 			let manager = new AnimalManager(ship, game.scene);
-			let fishnet = new FishNet(ship, manager);
-			fishnet.instantiate(game.scene);
+			ship.fishnet = new FishNet(ship, manager);
+			ship.fishnet.instantiate(game.scene);
 		}
 	);
 

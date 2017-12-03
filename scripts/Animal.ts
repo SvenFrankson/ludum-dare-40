@@ -6,7 +6,7 @@ abstract class Animal {
 
     }
 
-    public abstract catch(fishnet: FishNet): void;
+    public abstract catch(fishnet: FishNet): number;
 
     public dispose(): void {
         this.manager.removeAnimal(this);
@@ -53,11 +53,12 @@ abstract class Animal {
 
 class Protected extends Animal {
 
-    public catch(fishnet: FishNet): void {
+    public catch(fishnet: FishNet): number {
         Main.instance.scene.unregisterBeforeRender(this._update);
         this.instance.parent = fishnet.instance;
         this.instance.position.copyFromFloats(Math.random() * 2 - 2, 0, Math.random() * 2 - 2);
         this.manager.removeAnimal(this);
+        return 1;
     }
 }
 
@@ -87,8 +88,9 @@ class Turtle extends Protected {
 
 abstract class Fishable extends Animal {
 
-    public catch(fishnet: FishNet): void {
+    public catch(fishnet: FishNet): number {
         this.dispose();
+        return 0;
     }
 }
 

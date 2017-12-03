@@ -4,6 +4,7 @@ class FishNet {
     public ropeLeft: BABYLON.Mesh;
     public ropeRight: BABYLON.Mesh;
     public velocity: BABYLON.Vector3 = BABYLON.Vector3.Zero();
+    public protectedCaught: number = 0;
 
     constructor(public ship: Ship, public manager: AnimalManager) {
 
@@ -105,8 +106,8 @@ class FishNet {
             for (let i: number = 0; i < this.manager.animals.length; i++) {
                 let a = this.manager.animals[i];
                 if (a.instance) {
-                    if (BABYLON.Vector3.DistanceSquared(this.instance.position, a.instance.position) < 4) {
-                        a.catch(this);
+                    if (BABYLON.Vector3.DistanceSquared(this.instance.position, a.instance.position) < 9) {
+                        this.protectedCaught += a.catch(this);
                     }
                 }
             }

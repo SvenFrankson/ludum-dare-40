@@ -40,6 +40,7 @@ class Protected extends Animal {
         this.instance.parent = fishnet.instance;
         this.instance.position.copyFromFloats(Math.random() * 2 - 2, 0, Math.random() * 2 - 2);
         this.manager.removeAnimal(this);
+        return 1;
     }
 }
 class Turtle extends Protected {
@@ -66,6 +67,7 @@ class Turtle extends Protected {
 class Fishable extends Animal {
     catch(fishnet) {
         this.dispose();
+        return 0;
     }
 }
 class Fish extends Fishable {
@@ -182,6 +184,7 @@ class FishNet {
         this.ship = ship;
         this.manager = manager;
         this.velocity = BABYLON.Vector3.Zero();
+        this.protectedCaught = 0;
         this._updateFishNet = () => {
             if (this.ship && this.instance) {
                 let deltaTime = this.instance.getScene().getEngine().getDeltaTime();
@@ -218,8 +221,8 @@ class FishNet {
                 for (let i = 0; i < this.manager.animals.length; i++) {
                     let a = this.manager.animals[i];
                     if (a.instance) {
-                        if (BABYLON.Vector3.DistanceSquared(this.instance.position, a.instance.position) < 4) {
-                            a.catch(this);
+                        if (BABYLON.Vector3.DistanceSquared(this.instance.position, a.instance.position) < 9) {
+                            this.protectedCaught += a.catch(this);
                         }
                     }
                 }
@@ -309,8 +312,8 @@ window.addEventListener("DOMContentLoaded", () => {
     ship.instantiate(game.scene, () => {
         let shipControler = new ShipControler(ship, game.scene);
         let manager = new AnimalManager(ship, game.scene);
-        let fishnet = new FishNet(ship, manager);
-        fishnet.instantiate(game.scene);
+        ship.fishnet = new FishNet(ship, manager);
+        ship.fishnet.instantiate(game.scene);
     });
     game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", { width: seaSize * 10, height: seaSize * 10 }, game.scene);
     game.groundZero.isVisible = false;
@@ -462,9 +465,14 @@ class Ship {
                 let deltaTime = this.instance.getScene().getEngine().getDeltaTime();
                 let dir = this.target.subtract(this.instance.position);
                 let forward = this.instance.getDirection(BABYLON.Axis.Z);
+                let right = this.instance.getDirection(BABYLON.Axis.X);
                 let speedInput = BABYLON.Vector3.Dot(dir, forward) / 20;
                 speedInput = Math.min(Math.max(speedInput, 0), 1);
-                this.velocity.scaleInPlace(0.99);
+                let drag = 0.99;
+                if (this.fishnet) {
+                    drag = Math.pow(drag, this.fishnet.protectedCaught + 1);
+                }
+                this.velocity.scaleInPlace(drag);
                 if (Main.instance.pointerDown) {
                     this.velocity.addInPlace(forward.scale(speedInput / 5));
                 }
@@ -489,10 +497,10 @@ class Ship {
                 */
                 if (isFinite(alpha)) {
                     if (Main.instance.pointerDown) {
-                        this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 8 * deltaTime / 1000));
+                        this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 2 * deltaTime / 1000));
                     }
                     this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
-                    this.container.rotation.z = Math.sign(alpha) * Math.min(Math.abs(alpha) / 2, Math.PI / 16);
+                    this.container.rotation.z = BABYLON.Vector3.Dot(this.velocity, right) / 20;
                 }
             }
         };
