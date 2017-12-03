@@ -284,11 +284,11 @@ class ShipCamera extends BABYLON.FreeCamera {
         this._update = () => {
             if (this.ship && this.ship.instance) {
                 let targetPos = this.ship.instance.position.clone();
-                targetPos.y = 7;
+                targetPos.y = 5;
                 let cameraPos = this.ship.instance.getDirection(BABYLON.Axis.Z);
                 cameraPos.y = 0;
-                cameraPos.scaleInPlace(-20);
-                cameraPos.addInPlace(new BABYLON.Vector3(0, 20, 0));
+                cameraPos.scaleInPlace(-30);
+                cameraPos.addInPlace(new BABYLON.Vector3(0, 30, 0));
                 cameraPos.x += this.ship.instance.position.x;
                 cameraPos.z += this.ship.instance.position.z;
                 this.position = BABYLON.Vector3.Lerp(this.position, cameraPos, 1 / this.smoothness);
