@@ -69,25 +69,25 @@ void main(void) {
     vec4 outPosition = worldViewProjection * vec4(position, 1.0);
 
     float d0 = dot(vec2(position.x, position.z), dir0);
-    float v0 = sin((d0 + time * s0 / 3.) * k0) * a0;
+    float v0 = sin((d0 + time * s0 / 5.) * k0) * a0;
 
     float d1 = dot(vec2(position.x, position.z), dir1);
-    float v1 = sin((d1 + time * s1 / 3.) * k1) * a1;
+    float v1 = sin((d1 + time * s1 / 5.) * k1) * a1;
 
     float d2 = dot(vec2(position.x, position.z), dir2);
-    float v2 = sin((d2 + time * s2 / 3.) * k2) * a2;
+    float v2 = sin((d2 + time * s2 / 5.) * k2) * a2;
 
     float d3 = dot(vec2(position.x, position.z), dir3);
-    float v3 = sin((d3 + time * s3 / 3.) * k3) * a3;
+    float v3 = sin((d3 + time * s3 / 5.) * k3) * a3;
 
     float d4 = dot(vec2(position.x, position.z), dir4);
-    float v4 = sin((d4 + time * s4 / 3.) * k4) * a4;
+    float v4 = sin((d4 + time * s4 / 5.) * k4) * a4;
 
     float d5 = dot(vec2(position.x, position.z), dir5);
     float v5 = sin((d5 + time * s5 / 5.) * k5) * a5;
 
     float d6 = dot(vec2(position.x, position.z), dir6);
-    float v6 = sin((d6 + time * s6 / 3.) * k6) * a6;
+    float v6 = sin((d6 + time * s6 / 5.) * k6) * a6;
 
     outPosition.y += (v0 + v1 + v2 + v3 + v4 + v5 + v6);
 

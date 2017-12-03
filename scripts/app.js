@@ -1,15 +1,34 @@
 class Animal {
     constructor(name) {
         this.name = name;
+        this.dir = BABYLON.Vector3.Forward();
+        this.targetDir = BABYLON.Vector3.Right();
+        this._update = () => {
+            this.dir = this.instance.getDirection(BABYLON.Axis.Z);
+            let alpha = LDMath.AngleFromToAround(this.dir, this.targetDir, BABYLON.Axis.Y);
+            if (Math.abs(alpha) > Math.PI / 64) {
+                this.dir = BABYLON.Vector3.Lerp(this.dir, this.targetDir, 0.001).normalize();
+                this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), 0.01));
+                this.instance.translate(BABYLON.Axis.Z, 0.1);
+            }
+            else {
+                this.targetDir = new BABYLON.Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
+            }
+        };
     }
     instantiate(position, scene) {
         BABYLON.SceneLoader.ImportMesh("", "./data/" + this.name + ".babylon", "", scene, (meshes) => {
             this.instance = meshes[0];
             this.instance.position = position;
-            this.instance.material = new ToonMaterial("ToonMaterial", BABYLON.Color3.Black(), scene);
+            this.instance.material = new BABYLON.StandardMaterial("Test", scene);
+            this.instance.material.diffuseColor = BABYLON.Color3.FromHexString("#ffffff");
+            this.instance.material.specularColor.copyFromFloats(0, 0, 0);
+            this.instance.material.emissiveColor.copyFromFloats(0.2, 0.2, 0.2);
             this.instance.renderOutline = true;
             this.instance.outlineColor = BABYLON.Color3.Black();
-            this.instance.outlineWidth = 0.03;
+            this.instance.outlineWidth = 0.04;
+            this.instance.skeleton.beginAnimation("FishArmatureAction", true);
+            scene.registerBeforeRender(this._update);
         });
     }
 }
@@ -50,7 +69,12 @@ window.addEventListener("DOMContentLoaded", () => {
     let shipControler = new ShipControler(ship, game.scene);
     for (let i = 0; i < 10; i++) {
         let t = new Animal("turtle");
-        let p = new BABYLON.Vector3((Math.random() - 0.5) * 2 * 42, -2, (Math.random() - 0.5) * 2 * 42);
+        let p = new BABYLON.Vector3((Math.random() - 0.5) * 2 * 6, -2, (Math.random() - 0.5) * 2 * 6);
+        t.instantiate(p, game.scene);
+    }
+    for (let i = 0; i < 10; i++) {
+        let t = new Animal("fish");
+        let p = new BABYLON.Vector3((Math.random() - 0.5) * 2 * 6, -2, (Math.random() - 0.5) * 2 * 6);
         t.instantiate(p, game.scene);
     }
     game.groundZero = BABYLON.MeshBuilder.CreateGround("GroundZero", { width: seaSize * 10, height: seaSize * 10 }, game.scene);
@@ -114,9 +138,9 @@ class Sea {
         }
     }
     instantiate(scene) {
-        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", { width: 512, height: 512, subdivisions: 512 }, scene);
+        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", { width: 2048, height: 2048, subdivisions: 1 }, scene);
         this.mesh.material = new SeaMaterial("SeaMaterial", scene);
-        let bottom = BABYLON.MeshBuilder.CreateGround("Sea", { width: 512, height: 512, subdivisions: 512 }, scene);
+        let bottom = BABYLON.MeshBuilder.CreateGround("Sea", { width: 2048, height: 2048, subdivisions: 1 }, scene);
         bottom.position.y = -5;
         let bottomMaterial = new BABYLON.StandardMaterial("BottomMaterial", scene);
         bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#7ee5f7");

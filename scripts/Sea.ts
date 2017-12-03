@@ -26,10 +26,10 @@ class Sea {
     }
 
     public instantiate(scene: BABYLON.Scene): void {
-        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", {width: 512, height: 512, subdivisions: 512}, scene);
+        this.mesh = BABYLON.MeshBuilder.CreateGround("Sea", {width: 2048, height: 2048, subdivisions: 1}, scene);
         this.mesh.material = new SeaMaterial("SeaMaterial", scene);
         
-        let bottom = BABYLON.MeshBuilder.CreateGround("Sea", {width: 512, height: 512, subdivisions: 512}, scene);
+        let bottom = BABYLON.MeshBuilder.CreateGround("Sea", {width: 2048, height: 2048, subdivisions: 1}, scene);
         bottom.position.y = -5;
         let bottomMaterial = new BABYLON.StandardMaterial("BottomMaterial", scene);
         bottomMaterial.diffuseColor = BABYLON.Color3.FromHexString("#7ee5f7");

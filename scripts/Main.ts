@@ -58,9 +58,19 @@ window.addEventListener("DOMContentLoaded", () => {
 	for (let i: number = 0; i < 10; i++) {
 		let t = new Animal("turtle");
 		let p = new BABYLON.Vector3(
-			(Math.random() - 0.5) * 2 * 42,
+			(Math.random() - 0.5) * 2 * 6,
 			- 2,
-			(Math.random() - 0.5) * 2 * 42
+			(Math.random() - 0.5) * 2 * 6
+		);
+		t.instantiate(p, game.scene);
+	}
+
+	for (let i: number = 0; i < 10; i++) {
+		let t = new Animal("fish");
+		let p = new BABYLON.Vector3(
+			(Math.random() - 0.5) * 2 * 6,
+			- 2,
+			(Math.random() - 0.5) * 2 * 6
 		);
 		t.instantiate(p, game.scene);
 	}
