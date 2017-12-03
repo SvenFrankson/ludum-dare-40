@@ -70,6 +70,7 @@ class Turtle extends Protected {
     
     public catch(fishnet: FishNet): number {
         Main.instance.score -= 100;
+        Main.instance.turtles++;
         return super.catch(fishnet);
     }
 
@@ -95,6 +96,7 @@ class Tuna extends Protected {
     
     public catch(fishnet: FishNet): number {
         Main.instance.score -= 50;
+        Main.instance.tunas++;
         return super.catch(fishnet);
     }
 
@@ -120,14 +122,15 @@ abstract class Fishable extends Animal {
     }
 }
 
-class Fish extends Fishable {
+class Herring extends Fishable {
     
     constructor(manager: AnimalManager) {
         super("fish", manager);
     }
 
     public catch(fishnet: FishNet): number {
-        Main.instance.score += 50;
+        Main.instance.score += 25;
+        Main.instance.herrings++;
         return super.catch(fishnet);
     }
 
@@ -152,6 +155,7 @@ class Cod extends Fishable {
     
     public catch(fishnet: FishNet): number {
         Main.instance.score += 50;
+        Main.instance.cods++;
         return super.catch(fishnet);
     }
     

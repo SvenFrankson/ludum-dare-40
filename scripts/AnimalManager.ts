@@ -101,7 +101,7 @@ class AnimalManager {
         let f: Fishable;
         let r = Math.random();
         if (r < 0.5) {
-            f = new Fish(this);
+            f = new Herring(this);
         } else {
             f = new Cod(this);
         }

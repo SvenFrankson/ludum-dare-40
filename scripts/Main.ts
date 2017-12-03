@@ -16,8 +16,49 @@ class Main {
 	public set score(v: number) {
 		this._score = v;
 		$("#score").text(this.score.toFixed(0));
+		$("#score-count").text(this.score.toFixed(0));
 	}
 	public timer = 0;
+	
+	private _herrings: number = 0;
+	public get herrings(): number {
+		return this._herrings;
+	}
+	public set herrings(v: number) {
+		this._herrings = v;
+		$("#herrings-count").text((this.herrings).toFixed(0));
+		$("#herrings-score").text((this.herrings * 25).toFixed(0));
+	}
+
+	private _cods: number = 0;
+	public get cods(): number {
+		return this._cods;
+	}
+	public set cods(v: number) {
+		this._cods = v;
+		$("#cods-count").text((this.cods).toFixed(0));
+		$("#cods-score").text((this.cods * 50).toFixed(0));
+	}
+
+	private _tunas: number = 0;
+	public get tunas(): number {
+		return this._tunas;
+	}
+	public set tunas(v: number) {
+		this._tunas = v;
+		$("#tunas-count").text((this.tunas).toFixed(0));
+		$("#tunas-score").text((this.tunas * - 50).toFixed(0));
+	}
+
+	private _turtles: number = 0;
+	public get turtles(): number {
+		return this._turtles;
+	}
+	public set turtles(v: number) {
+		this._turtles = v;
+		$("#turtles-count").text((this.turtles).toFixed(0));
+		$("#turtles-score").text((this.turtles * - 100).toFixed(0));
+	}
 
 	public fishMaterial: BABYLON.StandardMaterial;
 	public codMaterial: BABYLON.StandardMaterial;
@@ -61,7 +102,7 @@ class Main {
 		$("#gui").fadeOut(600, undefined, () => {
 			this.score = 0;
 			this.playing = true;
-			this.timer = 5;
+			this.timer = 30;
 			$("#in-game").fadeIn(300, undefined, () => {
 
 			})

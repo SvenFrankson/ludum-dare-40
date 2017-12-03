@@ -49,6 +49,7 @@ class Turtle extends Protected {
     }
     catch(fishnet) {
         Main.instance.score -= 100;
+        Main.instance.turtles++;
         return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
@@ -70,6 +71,7 @@ class Tuna extends Protected {
     }
     catch(fishnet) {
         Main.instance.score -= 50;
+        Main.instance.tunas++;
         return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
@@ -91,12 +93,13 @@ class Fishable extends Animal {
         return 0;
     }
 }
-class Fish extends Fishable {
+class Herring extends Fishable {
     constructor(manager) {
         super("fish", manager);
     }
     catch(fishnet) {
-        Main.instance.score += 50;
+        Main.instance.score += 25;
+        Main.instance.herrings++;
         return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
@@ -118,6 +121,7 @@ class Cod extends Fishable {
     }
     catch(fishnet) {
         Main.instance.score += 50;
+        Main.instance.cods++;
         return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
@@ -225,7 +229,7 @@ class AnimalManager {
         let f;
         let r = Math.random();
         if (r < 0.5) {
-            f = new Fish(this);
+            f = new Herring(this);
         }
         else {
             f = new Cod(this);
@@ -321,6 +325,10 @@ class Main {
         this.pointerDown = false;
         this._score = 0;
         this.timer = 0;
+        this._herrings = 0;
+        this._cods = 0;
+        this._tunas = 0;
+        this._turtles = 0;
         Main.instance = this;
         this.canvas = document.getElementById(canvasElement);
         this.engine = new BABYLON.Engine(this.canvas, true);
@@ -332,6 +340,39 @@ class Main {
     set score(v) {
         this._score = v;
         $("#score").text(this.score.toFixed(0));
+        $("#score-count").text(this.score.toFixed(0));
+    }
+    get herrings() {
+        return this._herrings;
+    }
+    set herrings(v) {
+        this._herrings = v;
+        $("#herrings-count").text((this.herrings).toFixed(0));
+        $("#herrings-score").text((this.herrings * 25).toFixed(0));
+    }
+    get cods() {
+        return this._cods;
+    }
+    set cods(v) {
+        this._cods = v;
+        $("#cods-count").text((this.cods).toFixed(0));
+        $("#cods-score").text((this.cods * 50).toFixed(0));
+    }
+    get tunas() {
+        return this._tunas;
+    }
+    set tunas(v) {
+        this._tunas = v;
+        $("#tunas-count").text((this.tunas).toFixed(0));
+        $("#tunas-score").text((this.tunas * -50).toFixed(0));
+    }
+    get turtles() {
+        return this._turtles;
+    }
+    set turtles(v) {
+        this._turtles = v;
+        $("#turtles-count").text((this.turtles).toFixed(0));
+        $("#turtles-score").text((this.turtles * -100).toFixed(0));
     }
     createScene() {
         this.scene = new BABYLON.Scene(this.engine);
@@ -358,7 +399,7 @@ class Main {
         $("#gui").fadeOut(600, undefined, () => {
             this.score = 0;
             this.playing = true;
-            this.timer = 5;
+            this.timer = 30;
             $("#in-game").fadeIn(300, undefined, () => {
             });
         });
