@@ -43,7 +43,7 @@ class Protected extends Animal {
     catch(fishnet) {
         Main.instance.scene.unregisterBeforeRender(this._update);
         this.instance.parent = fishnet.instance;
-        this.instance.position.copyFromFloats(Math.random() * 2 - 2, 0, Math.random() * 2 - 2);
+        this.instance.position.copyFromFloats(Math.random() * 2 - 2, -Math.random() - 1, Math.random() * 2 - 2);
         this.manager.removeAnimal(this);
         return 1;
     }
@@ -77,6 +77,10 @@ class Tuna extends Protected {
     catch(fishnet) {
         Main.instance.score -= 50;
         Main.instance.tunas++;
+        setTimeout(() => {
+            this.dispose();
+            fishnet.protectedCaught--;
+        }, 10000);
         return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
@@ -94,8 +98,11 @@ class Tuna extends Protected {
 }
 class Fishable extends Animal {
     catch(fishnet) {
-        this.dispose();
-        return 0;
+        Main.instance.scene.unregisterBeforeRender(this._update);
+        this.instance.parent = fishnet.instance;
+        this.instance.position.copyFromFloats(Math.random() * 3 - 3, -Math.random() - 1, Math.random() * 3 - 3);
+        this.manager.removeAnimal(this);
+        return 1;
     }
 }
 class Herring extends Fishable {
@@ -105,6 +112,10 @@ class Herring extends Fishable {
     catch(fishnet) {
         Main.instance.score += 25;
         Main.instance.herrings++;
+        setTimeout(() => {
+            this.dispose();
+            fishnet.protectedCaught--;
+        }, 3000);
         return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
@@ -127,6 +138,10 @@ class Cod extends Fishable {
     catch(fishnet) {
         Main.instance.score += 50;
         Main.instance.cods++;
+        setTimeout(() => {
+            this.dispose();
+            fishnet.protectedCaught--;
+        }, 5000);
         return super.catch(fishnet);
     }
     instantiate(position, scene, callback) {
@@ -278,13 +293,13 @@ class FishNet {
                 let delta = (dir.length() - 10) / 10;
                 delta = Math.min(Math.max(delta, -1), 1);
                 dir.normalize();
-                this.velocity.scaleInPlace(0.99);
-                this.velocity.addInPlace(dir.scale(delta / 2));
+                this.velocity.scaleInPlace(0.98);
+                this.velocity.addInPlace(dir.scale(delta / 1.5));
                 this.instance.position.addInPlace(this.velocity.scale(deltaTime / 1000));
                 this.instance.lookAt(this.ship.instance.position, Math.PI);
                 let ropeLeftStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(-3.37, 0, 0.62), this.instance.getWorldMatrix());
                 let ropeRightStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(3.37, 0, 0.62), this.instance.getWorldMatrix());
-                let ropeShipEnd = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 2.66, -3.6), this.ship.container.getWorldMatrix());
+                let ropeShipEnd = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 3.22, -4.35), this.ship.container.getWorldMatrix());
                 BABYLON.MeshBuilder.CreateTube("RopeLeft", {
                     path: [
                         ropeLeftStart,
@@ -304,10 +319,12 @@ class FishNet {
                     instance: this.ropeRight,
                 }, this.instance.getScene());
                 if (Main.instance.playing) {
+                    let r = 3;
+                    let p = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 0, -2.5), this.instance.getWorldMatrix());
                     for (let i = 0; i < this.manager.animals.length; i++) {
                         let a = this.manager.animals[i];
                         if (a.instance) {
-                            if (BABYLON.Vector3.DistanceSquared(this.instance.position, a.instance.position) < 9) {
+                            if (BABYLON.Vector3.DistanceSquared(p, a.instance.position) < 9) {
                                 this.protectedCaught += a.catch(this);
                             }
                         }
@@ -332,6 +349,7 @@ class FishNet {
                 radius: 0.05,
                 updatable: true
             }, scene);
+            this.ropeLeft.material = this.instance.material;
             this.ropeRight = BABYLON.MeshBuilder.CreateTube("RopeRight", {
                 path: [
                     BABYLON.Vector3.Zero(),
@@ -340,6 +358,7 @@ class FishNet {
                 radius: 0.05,
                 updatable: true
             }, scene);
+            this.ropeRight.material = this.instance.material;
             scene.registerBeforeRender(this._updateFishNet);
         });
     }
@@ -423,7 +442,7 @@ class Main {
     playButtonClic() {
         $("#gui").fadeOut(600, undefined, () => {
             this.score = 0;
-            this.timer = 30;
+            this.timer = 60;
             $("#in-game").fadeIn(300, undefined, () => {
                 this.playing = true;
                 $("#message-1").fadeIn(300, undefined, () => {
@@ -479,7 +498,7 @@ window.addEventListener("DOMContentLoaded", () => {
         location.reload();
     });
     $("#share-button").on("click", () => {
-        let tweet = "I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here #LDJAM";
+        let tweet = "I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here https://goo.gl/GKC4KA #LDJAM";
         window.open("https://twitter.com/intent/tweet?text=" + tweet);
     });
     game.canvas.addEventListener("pointerdown", () => {
@@ -653,13 +672,13 @@ class Ship {
                 let right = this.instance.getDirection(BABYLON.Axis.X);
                 let speedInput = BABYLON.Vector3.Dot(dir, forward) / 20;
                 speedInput = Math.min(Math.max(speedInput, 0), 1);
-                let drag = 0.99;
+                let drag = 0.98;
                 if (this.fishnet) {
                     drag = Math.pow(drag, this.fishnet.protectedCaught + 1);
                 }
                 this.velocity.scaleInPlace(drag);
-                if (Main.instance.pointerDown) {
-                    this.velocity.addInPlace(forward.scale(speedInput / 5));
+                if (dir.lengthSquared() > 1) {
+                    this.velocity.addInPlace(forward.scale(speedInput / 2.5));
                 }
                 this.instance.position.x += this.velocity.x * deltaTime / 1000;
                 this.instance.position.z += this.velocity.z * deltaTime / 1000;
@@ -681,7 +700,7 @@ class Ship {
                 );
                 */
                 if (isFinite(alpha)) {
-                    if (Main.instance.pointerDown) {
+                    if (dir.lengthSquared() > 1) {
                         this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 2 * deltaTime / 1000));
                     }
                     this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;
@@ -752,16 +771,57 @@ class ShipCamera extends BABYLON.FreeCamera {
 class ShipControler {
     constructor(ship, scene) {
         this._checkInputs = () => {
-            let pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh) => {
-                return mesh === Main.instance.groundZero;
-            });
-            if (pickInfo.hit) {
-                this.ship.target.copyFrom(pickInfo.pickedPoint);
+            if (this.ship.instance) {
+                let newTarget = this.ship.instance.position.clone();
+                if (Main.instance.pointerDown) {
+                    let pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh) => {
+                        return mesh === Main.instance.groundZero;
+                    });
+                    if (pickInfo.hit) {
+                        newTarget.copyFrom(pickInfo.pickedPoint);
+                    }
+                }
+                else {
+                    let localTarget = BABYLON.Vector3.Zero();
+                    if (this.forward) {
+                        localTarget.z = 20;
+                    }
+                    if (this.right) {
+                        localTarget.x = 10;
+                    }
+                    else if (this.left) {
+                        localTarget.x = -10;
+                    }
+                    BABYLON.Vector3.TransformCoordinatesToRef(localTarget, this.ship.instance.getWorldMatrix(), newTarget);
+                }
+                this.ship.target.copyFrom(newTarget);
             }
         };
         this.ship = ship;
         this.scene = scene;
         this.scene.registerBeforeRender(this._checkInputs);
+        window.onkeydown = (ev) => {
+            if (ev.key === "ArrowLeft") {
+                this.left = true;
+            }
+            if (ev.key === "ArrowRight") {
+                this.right = true;
+            }
+            if (ev.key === "ArrowUp") {
+                this.forward = true;
+            }
+        };
+        window.onkeyup = (ev) => {
+            if (ev.key === "ArrowLeft") {
+                this.left = false;
+            }
+            if (ev.key === "ArrowRight") {
+                this.right = false;
+            }
+            if (ev.key === "ArrowUp") {
+                this.forward = false;
+            }
+        };
     }
 }
 class ShipTrail extends BABYLON.Mesh {

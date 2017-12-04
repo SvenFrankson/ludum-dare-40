@@ -23,13 +23,13 @@ class Ship {
 
             let speedInput = BABYLON.Vector3.Dot(dir, forward) / 20;
             speedInput = Math.min(Math.max(speedInput, 0), 1);
-            let drag = 0.99;
+            let drag = 0.98;
             if (this.fishnet) {
                 drag = Math.pow(drag, this.fishnet.protectedCaught + 1);
             }
             this.velocity.scaleInPlace(drag);
-            if (Main.instance.pointerDown) {
-                this.velocity.addInPlace(forward.scale(speedInput / 5));
+            if (dir.lengthSquared() > 1) {
+                this.velocity.addInPlace(forward.scale(speedInput / 2.5));
             }
 
             this.instance.position.x += this.velocity.x * deltaTime / 1000;
@@ -53,7 +53,7 @@ class Ship {
             );
             */
             if (isFinite(alpha)) {
-                if (Main.instance.pointerDown) {
+                if (dir.lengthSquared() > 1) {
                     this.instance.rotate(BABYLON.Axis.Y, Math.sign(alpha) * Math.min(Math.abs(alpha), Math.PI / 2 * deltaTime / 1000));
                 }
                 this.container.rotation.x = -Math.PI / 16 * this.velocity.length() / 10;

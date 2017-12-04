@@ -60,7 +60,7 @@ class Protected extends Animal {
     public catch(fishnet: FishNet): number {
         Main.instance.scene.unregisterBeforeRender(this._update);
         this.instance.parent = fishnet.instance;
-        this.instance.position.copyFromFloats(Math.random() * 2 - 2, 0, Math.random() * 2 - 2);
+        this.instance.position.copyFromFloats(Math.random() * 2 - 2, - Math.random() - 1, Math.random() * 2 - 2);
         this.manager.removeAnimal(this);
         return 1;
     }
@@ -101,6 +101,13 @@ class Tuna extends Protected {
     public catch(fishnet: FishNet): number {
         Main.instance.score -= 50;
         Main.instance.tunas++;
+        setTimeout(
+            () => {
+                this.dispose();
+                fishnet.protectedCaught--;
+            },
+            10000
+        );
         return super.catch(fishnet);
     }
 
@@ -121,8 +128,11 @@ class Tuna extends Protected {
 abstract class Fishable extends Animal {
 
     public catch(fishnet: FishNet): number {
-        this.dispose();
-        return 0;
+        Main.instance.scene.unregisterBeforeRender(this._update);
+        this.instance.parent = fishnet.instance;
+        this.instance.position.copyFromFloats(Math.random() * 3 - 3, - Math.random() - 1, Math.random() * 3 - 3);
+        this.manager.removeAnimal(this);
+        return 1;
     }
 }
 
@@ -135,6 +145,13 @@ class Herring extends Fishable {
     public catch(fishnet: FishNet): number {
         Main.instance.score += 25;
         Main.instance.herrings++;
+        setTimeout(
+            () => {
+                this.dispose();
+                fishnet.protectedCaught--;
+            },
+            3000
+        );
         return super.catch(fishnet);
     }
 
@@ -160,6 +177,13 @@ class Cod extends Fishable {
     public catch(fishnet: FishNet): number {
         Main.instance.score += 50;
         Main.instance.cods++;
+        setTimeout(
+            () => {
+                this.dispose();
+                fishnet.protectedCaught--;
+            },
+            5000
+        );
         return super.catch(fishnet);
     }
     

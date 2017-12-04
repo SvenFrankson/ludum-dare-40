@@ -101,7 +101,7 @@ class Main {
 	public playButtonClic(): void {
 		$("#gui").fadeOut(600, undefined, () => {
 			this.score = 0;
-			this.timer = 30;
+			this.timer = 60;
 			$("#in-game").fadeIn(300, undefined, () => {
 				this.playing = true;
 				$("#message-1").fadeIn(300, undefined, () => {
@@ -176,7 +176,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	});
 	
 	$("#share-button").on("click", () => {
-		let tweet = "I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here #LDJAM";
+		let tweet = "I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here https://goo.gl/GKC4KA #LDJAM";
 		window.open("https://twitter.com/intent/tweet?text=" + tweet);
 	});
 

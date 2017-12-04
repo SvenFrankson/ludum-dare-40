@@ -38,6 +38,7 @@ class FishNet {
                     },
                     scene
                 );
+                this.ropeLeft.material = this.instance.material;
                 this.ropeRight = BABYLON.MeshBuilder.CreateTube(
                     "RopeRight",
                     {
@@ -50,6 +51,7 @@ class FishNet {
                     },
                     scene
                 );
+                this.ropeRight.material = this.instance.material;
 
                 scene.registerBeforeRender(this._updateFishNet);
             }
@@ -65,15 +67,15 @@ class FishNet {
             delta = Math.min(Math.max(delta, -1), 1);
             dir.normalize();
 
-            this.velocity.scaleInPlace(0.99);
-            this.velocity.addInPlace(dir.scale(delta / 2));
+            this.velocity.scaleInPlace(0.98);
+            this.velocity.addInPlace(dir.scale(delta / 1.5));
             this.instance.position.addInPlace(this.velocity.scale(deltaTime / 1000));
 
             this.instance.lookAt(this.ship.instance.position, Math.PI);
 
             let ropeLeftStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(-3.37, 0, 0.62), this.instance.getWorldMatrix());
             let ropeRightStart = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(3.37, 0, 0.62), this.instance.getWorldMatrix());
-            let ropeShipEnd = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 2.66, -3.6), this.ship.container.getWorldMatrix());
+            let ropeShipEnd = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 3.22, -4.35), this.ship.container.getWorldMatrix());
 
             BABYLON.MeshBuilder.CreateTube(
                 "RopeLeft",
@@ -104,10 +106,12 @@ class FishNet {
             );
 
             if (Main.instance.playing) {
+                let r = 3;
+                let p = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 0, -2.5), this.instance.getWorldMatrix());
                 for (let i: number = 0; i < this.manager.animals.length; i++) {
                     let a = this.manager.animals[i];
                     if (a.instance) {
-                        if (BABYLON.Vector3.DistanceSquared(this.instance.position, a.instance.position) < 9) {
+                        if (BABYLON.Vector3.DistanceSquared(p, a.instance.position) < 9) {
                             this.protectedCaught += a.catch(this);
                         }
                     }
@@ -115,4 +119,5 @@ class FishNet {
             }
         }
     }
+    public debug: BABYLON.Mesh;
 }
