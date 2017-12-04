@@ -176,7 +176,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	});
 	
 	$("#share-button").on("click", () => {
-		let tweet = "I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here https://goo.gl/GKC4KA #LDJAM";
+		let tweet = "#LDJAM I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here https://goo.gl/GKC4KA";
 		window.open("https://twitter.com/intent/tweet?text=" + tweet);
 	});
 

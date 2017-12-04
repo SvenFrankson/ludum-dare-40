@@ -111,6 +111,7 @@ class Herring extends Fishable {
     }
     catch(fishnet) {
         Main.instance.score += 25;
+        Main.instance.timer += 3;
         Main.instance.herrings++;
         setTimeout(() => {
             this.dispose();
@@ -137,6 +138,7 @@ class Cod extends Fishable {
     }
     catch(fishnet) {
         Main.instance.score += 50;
+        Main.instance.timer += 5;
         Main.instance.cods++;
         setTimeout(() => {
             this.dispose();
@@ -213,9 +215,6 @@ class AnimalManager {
         else {
             this.fishable.push(animal);
         }
-        $("#animal-count").text(this.animals.length + "");
-        $("#protected-count").text(this.protected.length + "");
-        $("#fishable-count").text(this.fishable.length + "");
     }
     removeAnimal(animal) {
         let index = this.animals.indexOf(animal);
@@ -234,9 +233,6 @@ class AnimalManager {
                 this.fishable.splice(index, 1);
             }
         }
-        $("#animal-count").text(this.animals.length + "");
-        $("#protected-count").text(this.protected.length + "");
-        $("#fishable-count").text(this.fishable.length + "");
     }
     _createAnimal() {
         let ratioProtected = this.protected.length / this.animals.length;
@@ -319,12 +315,11 @@ class FishNet {
                     instance: this.ropeRight,
                 }, this.instance.getScene());
                 if (Main.instance.playing) {
-                    let r = 3;
                     let p = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 0, -2.5), this.instance.getWorldMatrix());
                     for (let i = 0; i < this.manager.animals.length; i++) {
                         let a = this.manager.animals[i];
                         if (a.instance) {
-                            if (BABYLON.Vector3.DistanceSquared(p, a.instance.position) < 9) {
+                            if (BABYLON.Vector3.DistanceSquared(p, a.instance.position) < 14) {
                                 this.protectedCaught += a.catch(this);
                             }
                         }
@@ -498,7 +493,7 @@ window.addEventListener("DOMContentLoaded", () => {
         location.reload();
     });
     $("#share-button").on("click", () => {
-        let tweet = "I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here https://goo.gl/GKC4KA #LDJAM";
+        let tweet = "#LDJAM I just scored " + game.score + " on 'SomeFin In The Way' ! Try to beat me here https://goo.gl/GKC4KA";
         window.open("https://twitter.com/intent/tweet?text=" + tweet);
     });
     game.canvas.addEventListener("pointerdown", () => {

@@ -54,9 +54,6 @@ class AnimalManager {
         } else {
             this.fishable.push(animal);
         }
-        $("#animal-count").text(this.animals.length + "");
-        $("#protected-count").text(this.protected.length + "");
-        $("#fishable-count").text(this.fishable.length + "");
     }
     
     public removeAnimal(animal: Animal) {
@@ -75,9 +72,6 @@ class AnimalManager {
                 this.fishable.splice(index, 1);
             }
         }
-        $("#animal-count").text(this.animals.length + "");
-        $("#protected-count").text(this.protected.length + "");
-        $("#fishable-count").text(this.fishable.length + "");
     }
 
     private _updateAnimals = () => {

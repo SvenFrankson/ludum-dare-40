@@ -106,12 +106,11 @@ class FishNet {
             );
 
             if (Main.instance.playing) {
-                let r = 3;
                 let p = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 0, -2.5), this.instance.getWorldMatrix());
                 for (let i: number = 0; i < this.manager.animals.length; i++) {
                     let a = this.manager.animals[i];
                     if (a.instance) {
-                        if (BABYLON.Vector3.DistanceSquared(p, a.instance.position) < 9) {
+                        if (BABYLON.Vector3.DistanceSquared(p, a.instance.position) < 14) {
                             this.protectedCaught += a.catch(this);
                         }
                     }

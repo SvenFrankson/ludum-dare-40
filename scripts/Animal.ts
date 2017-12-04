@@ -144,6 +144,7 @@ class Herring extends Fishable {
 
     public catch(fishnet: FishNet): number {
         Main.instance.score += 25;
+        Main.instance.timer += 3;
         Main.instance.herrings++;
         setTimeout(
             () => {
@@ -176,6 +177,7 @@ class Cod extends Fishable {
     
     public catch(fishnet: FishNet): number {
         Main.instance.score += 50;
+        Main.instance.timer += 5;
         Main.instance.cods++;
         setTimeout(
             () => {
